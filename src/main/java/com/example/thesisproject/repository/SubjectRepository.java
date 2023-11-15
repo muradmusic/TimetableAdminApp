@@ -1,15 +1,13 @@
 package com.example.thesisproject.repository;
 
-
-import com.example.thesisproject.datamodel.entity.User;
+import com.example.thesisproject.datamodel.entity.Subject;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface SubjectRepository extends JpaRepository<Subject, Long> {
 
-    Optional<User> findUserByUsername(String username);
-
+    Optional<Subject> findBySubjectCode(String subjectCode);
 }

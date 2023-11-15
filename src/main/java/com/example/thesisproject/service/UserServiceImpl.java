@@ -3,6 +3,7 @@ package com.example.thesisproject.service;
 import com.example.thesisproject.datamodel.entity.User;
 import com.example.thesisproject.repository.UserRepository;
 import com.example.thesisproject.service.UserService;
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,5 +25,17 @@ public class UserServiceImpl implements UserService{
     @Override
     public List<User> fetchUsers() {
         return userRepository.findAll();
+    }
+
+    @Override
+    @PostConstruct
+    public void initializeTestData() {
+
+        User user = new User( "guthondr", "password");
+        User user1 = new User( "mammamur", "password");
+
+        userRepository.save(user);
+        userRepository.save(user1);
+
     }
 }

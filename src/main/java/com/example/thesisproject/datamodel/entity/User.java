@@ -3,16 +3,19 @@ package com.example.thesisproject.datamodel.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 //import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-
+import java.util.Set;
 
 
 @Data
 @Entity
 @Table(name = "users")
+@NoArgsConstructor
 public  class User {
 
     @Id
@@ -32,7 +35,14 @@ public  class User {
 
     private List<Role> roles = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserSubject> userSubjects = new HashSet<>();
 
+
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
 
 
 }
