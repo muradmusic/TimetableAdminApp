@@ -9,6 +9,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class SubjectServiceImpl implements SubjectService {
@@ -21,17 +23,26 @@ public class SubjectServiceImpl implements SubjectService {
     }
 
     @Override
-    @PostConstruct
-    public void initializeTestData() {
-
-        Subject subject = new Subject("BIE-PA1");
-        Subject subject1 = new Subject("BIE-TJV");
-
-
-        subjectRepository.save(subject);
-        subjectRepository.save(subject1);
-
-
-
+    public List<Subject> fetchSubjects() {
+        return subjectRepository.findAll() ;
     }
+
+    @Override
+    public void createSubject(Subject subject) {
+         subjectRepository.save(subject);
+    }
+    //    @Override
+//    @PostConstruct
+//    public void initializeTestData() {
+//
+//        Subject subject = new Subject("BIE-PA1");
+//        Subject subject1 = new Subject("BIE-TJV");
+//
+//
+//        subjectRepository.save(subject);
+//        subjectRepository.save(subject1);
+//
+//
+//
+//    }
 }

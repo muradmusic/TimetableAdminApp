@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>All Users</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container mt-4">
+  <h2>All Subjects</h2>
+
+  <a th:href="@{/subjects/create}" class="btn btn-primary mb-2">Create a new Subject</a>
+
+  <table class="table table-bordered">
+    <thead class="thead-dark">
+    <tr>
+      <th>ID</th>
+      <th>Subject Code</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="subject : ${subjects}">
+      <td th:text="${subject.id}"></td>
+      <td th:text="${subject.subjectCode}"></td>
+    </tr>
+    </tbody>
+  </table>
+
+
+</div>
+
+</body>
+</html>

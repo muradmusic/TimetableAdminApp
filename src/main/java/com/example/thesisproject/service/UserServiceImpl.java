@@ -17,6 +17,11 @@ public class UserServiceImpl implements UserService{
 
     private  UserRepository userRepository;
 
+    @Override
+    public void createUser(User user) {
+        userRepository.save(user);
+    }
+
     @Autowired
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -27,15 +32,15 @@ public class UserServiceImpl implements UserService{
         return userRepository.findAll();
     }
 
-    @Override
-    @PostConstruct
-    public void initializeTestData() {
-
-        User user = new User( "guthondr", "password");
-        User user1 = new User( "mammamur", "password");
-
-        userRepository.save(user);
-        userRepository.save(user1);
-
-    }
+//    @Override
+//    @PostConstruct
+//    public void initializeTestData() {
+//
+//        User user = new User( "guthondr", "password");
+//        User user1 = new User( "mammamur", "password");
+//
+//        userRepository.save(user);
+//        userRepository.save(user1);
+//
+//    }
 }

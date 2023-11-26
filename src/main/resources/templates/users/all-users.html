@@ -10,7 +10,8 @@
 <div class="container mt-4">
     <h2>All Users</h2>
 
-    <!-- Users Table -->
+    <a th:href="@{/users/create}" class="btn btn-primary mb-2">Create a new User</a>
+
     <table class="table table-bordered">
         <thead class="thead-dark">
         <tr>
@@ -35,7 +36,7 @@
                 <th>Username</th>
                 <th>Subject Code</th>
                 <th>Teaching Type</th>
-                <th>Decison to Teach</th>
+                <th>Decision to Teach</th>
             </tr>
             </thead>
             <tbody>
@@ -43,6 +44,8 @@
                 <td th:text="${userSubject.user.username}"></td>
                 <td th:text="${userSubject.subject.subjectCode}"></td>
                 <td th:text="${userSubject.teachingType.name()}"></td>
+                <!-- Use static data for demonstration purposes -->
+                <td>YES</td>
             </tr>
             </tbody>
         </table>

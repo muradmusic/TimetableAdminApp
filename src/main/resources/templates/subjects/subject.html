@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Subject</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container mt-4">
+
+  <h2>Teachers Registered for Subject:</h2>
+  <table class="table table-bordered">
+    <thead class="thead-dark">
+    <tr th:each="subjectCode : ${subject}">
+      <th th:text="${subjectCode.subjectCode}"></th>
+    </tr>
+    </thead>
+  </table>
+
+
+  <div th:if="${user_subjects}">
+    <h2>User Subjects</h2>
+    <table class="table table-bordered">
+      <thead class="thead-dark">
+      <tr>
+        <th>Username</th>
+        <th>Teaching Type</th>
+        <th>Decison to Teach</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="userSubject : ${user_subjects}">
+        <td th:text="${userSubject.user.username}"></td>
+        <td th:text="${userSubject.teachingType.name()}"></td>
+        <td>YES</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+</body>
+</html>

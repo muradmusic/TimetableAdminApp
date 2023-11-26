@@ -3,7 +3,9 @@ package com.example.thesisproject.datamodel.enums;
 public enum TeachingType {
 
     LECTURE("LECTURE"),
-    LAB("LAB");
+    LAB("LAB"),
+
+    SEMINAR("SEMINAR");
 
     private final String type;
 

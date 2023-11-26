@@ -16,6 +16,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class UserSubjectServiceImpl implements UserSubjectService {
@@ -30,31 +32,8 @@ public class UserSubjectServiceImpl implements UserSubjectService {
 
     private SubjectRepository subjectRepository;
 
-    @PostConstruct
-    public void initializeTestData() {
-        // Assuming you have users and subjects already created in your database
-        User user = userRepository.findUserByUsername("mammamur").orElseThrow(() -> new EntityNotFoundException("User not found"));
-        User user1 = userRepository.findUserByUsername("guthondr").orElseThrow(() -> new EntityNotFoundException("User not found"));
-
-        Subject subject = subjectRepository.findById(1l).orElseThrow(() -> new EntityNotFoundException("Subject not found"));
-        Subject subject1 = subjectRepository.findById(2l).orElseThrow(() -> new EntityNotFoundException("Subject not found"));
-
-
-        // Create UserSubject instances with different teaching types
-        UserSubject lectureUserSubject = new UserSubject(user, subject, TeachingType.LECTURE);
-        UserSubject labUserSubject = new UserSubject(user, subject, TeachingType.LAB);
-        UserSubject lectureUserSubject1 = new UserSubject(user1, subject1, TeachingType.LECTURE);
-        UserSubject labUserSubject1 = new UserSubject(user1, subject1, TeachingType.LAB);
-
-//        UserSubject bothUserSubject = new UserSubject(user, subject, TeachingType.BOTH);
-
-        // Save the instances to the database
-        userSubjectRepository.save(lectureUserSubject);
-        userSubjectRepository.save(labUserSubject);
-        userSubjectRepository.save(lectureUserSubject1);
-        userSubjectRepository.save(labUserSubject1);
-//        userSubjectRepository.save(bothUserSubject);
+    @Override
+    public List<UserSubject> fetchUserSubjects() {
+        return userSubjectRepository.findAll();
     }
-
-
 }
