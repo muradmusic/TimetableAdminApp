@@ -52,13 +52,10 @@ public class SubjectsController {
     public String renderUsersPage(Model model) {
 
         List<Subject> subjects = subjectService.fetchSubjects();
-//        List<UserSubject> userSubjects = userSubjectService.fetchUserSubjects();
         model.addAttribute("subjects", subjects);
-//        model.addAttribute("user_subjects", userSubjects );
 
 
         log.info("Fetched subjects: {}", subjects);
-//        log.info("Fetched user subjects: {}", userSubjects);
         return "subjects/all-subjects";
     }
 
@@ -68,7 +65,6 @@ public class SubjectsController {
         List<User> users = userService.fetchUsers();
         Subject subject = subjectRepository.findById(subjectId).orElseThrow();
 
-//        List<UserSubject> userSubjects = userSubjectRepository.findAll();
         List<UserSubject> userSubjects = userSubjectRepository.findUserSubjectsBySubjectId(subject.getId());
 
         model.addAttribute("users", users);
@@ -96,7 +92,7 @@ public class SubjectsController {
 
         subjectService.createSubject(subject);
 
-        return "redirect:/subjects/all"; // Redirect to the user list page or another appropriate page
+        return "redirect:/subjects/all";
     }
 
 

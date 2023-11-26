@@ -7,6 +7,16 @@
 </head>
 <body>
 
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" th:href="@{/}" style="font-weight: bold;">Home</a>
+    <div class="collapse navbar-collapse" id="mynavbar">
+      <ul class="navbar-nav ml-auto">
+      </ul>
+    </div>
+  </div>
+</nav>
+
 <div class="container mt-4">
   <h2>All Subjects</h2>
 
@@ -22,7 +32,11 @@
     <tbody>
     <tr th:each="subject : ${subjects}">
       <td th:text="${subject.id}"></td>
-      <td th:text="${subject.subjectCode}"></td>
+      <td>
+        <a th:href="@{'/subjects/' + ${subject.id}}"> <!-- Make subject code a dynamic link -->
+          <span th:text="${subject.subjectCode}"></span>
+        </a>
+      </td>
     </tr>
     </tbody>
   </table>

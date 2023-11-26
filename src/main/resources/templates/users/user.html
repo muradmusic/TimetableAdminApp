@@ -17,14 +17,13 @@
   </div>
 </nav>
 
-
 <div class="container mt-4">
 
-  <h2>Teachers Registered for Subject:</h2>
+  <h2> Registered Subjects for Teacher :</h2>
   <table class="table table-bordered">
     <thead class="thead-dark">
-    <tr th:each="subjectCode : ${subject}">
-      <th th:text="${subjectCode.subjectCode}"></th>
+    <tr th:each="username : ${user}">
+      <th th:text="${user.username}"></th>
     </tr>
     </thead>
   </table>
@@ -35,14 +34,14 @@
     <table class="table table-bordered">
       <thead class="thead-dark">
       <tr>
-        <th>Username</th>
+        <th>Subject</th>
         <th>Teaching Type</th>
         <th>Decison to Teach</th>
       </tr>
       </thead>
       <tbody>
       <tr th:each="userSubject : ${user_subjects}">
-        <td th:text="${userSubject.user.username}"></td>
+        <td th:text="${userSubject.subject.subjectCode}"></td>
         <td th:text="${userSubject.teachingType.name()}"></td>
         <td>YES</td>
       </tr>
