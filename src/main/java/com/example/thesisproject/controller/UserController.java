@@ -3,13 +3,14 @@ package com.example.thesisproject.controller;
 import com.example.thesisproject.datamodel.entity.Subject;
 import com.example.thesisproject.datamodel.entity.User;
 import com.example.thesisproject.datamodel.entity.UserSubject;
+import com.example.thesisproject.datamodel.enums.TeachingType;
+import com.example.thesisproject.repository.SubjectRepository;
 import com.example.thesisproject.repository.UserRepository;
 import com.example.thesisproject.repository.UserSubjectRepository;
 import com.example.thesisproject.service.SubjectService;
 import com.example.thesisproject.service.UserService;
 import com.example.thesisproject.service.UserSubjectService;
 import jakarta.validation.Valid;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,12 +38,17 @@ public class UserController {
     private UserSubjectRepository userSubjectRepository;
     @Autowired
     private SubjectService subjectService;
+
+    @Autowired
+    private SubjectRepository subjectRepository;
+
+
+
+
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private UserSubjectService userSubjectService;
-
-
 
 
     @Autowired
@@ -88,6 +94,7 @@ public class UserController {
         return "users/createUser";
     }
 
+
     @PostMapping("/create")
     public String createUser(@ModelAttribute("user") @Valid User user, BindingResult result, Model model) {
         if (result.hasErrors()) {
@@ -96,7 +103,48 @@ public class UserController {
 
         userService.createUser(user);
 
-        return "redirect:/users/all"; // Redirect to the user list page or another appropriate page
+        return "redirect:/users/all";
     }
+    @GetMapping("{userId}/assign")
+    public String showAssignSubjectForm(@PathVariable Long userId, Model model){
+
+
+        User user = userRepository.findById(userId).orElseThrow();
+
+//        List<TeachingType> teachingTypes = teachingTypeRepository.findAll();
+
+
+        List<Subject> subjects = subjectService.fetchSubjects();
+
+        model.addAttribute("subjects", subjects);
+        model.addAttribute("user" , user);
+//        model.addAttribute("teachingTypes", teachingTypes);
+
+        return "users/assignSubject";
+    }
+    @PostMapping("/save")
+    public String saveSubjects(@PathVariable Long userId, @RequestParam("teachingTypes") List<String> teachingTypes) {
+        // Get the current user (you may need to modify this based on your authentication mechanism)
+        User user = userRepository.findById(userId).orElseThrow();
+
+        // Iterate over the selected teaching types and save UserSubjects
+        for (String teachingType : teachingTypes) {
+            Subject subject  = subjectRepository.findById(userId).orElseThrow();
+                    UserSubject userSubject = new UserSubject(user, subject, TeachingType.valueOf(teachingType));
+                    userSubjectRepository.save(userSubject);
+        }
+//        UserSubject newdata = new UserSubject(user, )
+
+
+        // Redirect to the page displaying available subjects
+        return "redirect:/users/all}";
+    }
+
+
+
+
+
+
+
 
 }
