@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Subject</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/}" style="font-weight: bold;">Home</a>
+        <div class="collapse navbar-collapse" id="mynavbar">
+            <ul class="navbar-nav ml-auto">
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<h2 th:text="'Subjects to Assign to User: ' + ${user.username}"></h2>
+
+</table>  <table class="table table-bordered">
+    <thead class="thead-dark">
+    <tr>
+        <th>ID</th>
+        <th>Subject Code</th>
+        <th>Lecture</th>
+        <th>Lab</th>
+        <th>Seminar</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="subject : ${subjects}">
+        <td th:text="${subject.id}"></td>
+        <td>
+            <a th:href="@{'/subjects/' + ${subject.id}}">
+                <span th:text="${subject.subjectCode}"></span>
+            </a>
+        </td>
+        <td>
+            <input type="checkbox" name="teachingTypes" value="LECTURE" />
+        </td>
+        <td>
+            <input type="checkbox" name="teachingTypes" value="LAB" />
+        </td>
+        <td>
+            <input type="checkbox" name="teachingTypes" value="SEMINAR" />
+        </td>
+
+    </tr>
+    </tbody>
+</table>
+
+<form th:action="@{/subjects/save}" method="post">
+    <label for="subjectCode">Subject Code:</label>
+    <input type="text" id="subjectCode" name="subjectCode" required/>
+
+    <label for="teachingType">Teaching Type:</label>
+    <select id="teachingType" name="teachingType">
+        <option value="LECTURE">Lecture</option>
+        <option value="SEMINAR">Seminar</option>
+        <option value="LAB">Lab</option>
+    </select>
+
+    <button type="submit" class="btn btn-primary">Add Subject</button>
+</form>
+
+<button type="submit" class="btn btn-primary">Save Subjects</button>
+
+
+<!--<div class="form-group blu-margin" id="teachingTypes" style="display: block">-->
+<!--&lt;!&ndash;    <label for="teachingType-select">Select teachingType</label>&ndash;&gt;-->
+<!--    <select th:field="*{teachingTypes}" id="category-select" name="category" class="form-control">-->
+<!--        <option th:each="teachingType : ${teachingTypes}"-->
+<!--                th:text="${teachingType}">-->
+<!--        </option>-->
+<!--    </select>-->
+<!--</div>-->
+<!--th:if="${categories != null}"-->
+<!--th:value="${category.id}"-->
+
+
+
+
+</div>
+
+</body>
+</html>

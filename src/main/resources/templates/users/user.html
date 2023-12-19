@@ -37,6 +37,7 @@
       <tr>
         <th>Subject</th>
         <th>Teaching Type</th>
+        <th>hasLabs</th>
         <th>Decison to Teach</th>
       </tr>
       </thead>
@@ -44,13 +45,50 @@
       <tr th:each="userSubject : ${user_subjects}">
         <td th:text="${userSubject.subject.subjectCode}"></td>
         <td th:text="${userSubject.teachingType.name()}"></td>
-        <td>YES</td>
+        <td th:text="${userSubject.subject.hasLabs}"></td>
+        <td>PENDING</td>
       </tr>
       </tbody>
     </table>
   </div>
 
+<!--  -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
+
+  <h1 class="py-5">Adding new Subject</h1>
+  <form action="/users/{userId}" method="post" th:object="${newRecord}" th:action="@{'/users/' + ${user.id}}">
+    <!-- Your form fields here -->
+
+    <div class="form-group">
+      <label for="subject">Select Subject:</label>
+      <select class="form-control" id="subjectId" name="subjectId" required>
+        <option hidden value="">Select a subject</option>
+        <option th:each="subject : ${subjects}" th:value="${subject.id}" th:text="${subject.subjectCode}"></option>
+      </select>
+    </div>
+    <script>
+      // Initialize Select2
+      $(document).ready(function () {
+        $('#subjectId').select2();
+      });
+    </script>
+
+    <div class="form-group">
+      <label for="teachingType">Teaching Type:</label>
+      <select class="form-control" id="teachingType" name="teachingType" required>
+        <option hidden value="">Select a teaching type</option>
+        <option th:each="teachingType : ${allTeachingTypes}" th:value="${teachingType.name()}" th:text="${teachingType.name()}"></option>
+      </select>
+    </div>
+
+    <input class="btn btn-primary" type="submit" value="Create Record">
+  </form>
+
+
 </div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.0/css/select2.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.0/js/select2.min.js"></script>
 
 </body>
 </html>

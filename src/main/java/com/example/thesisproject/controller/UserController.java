@@ -10,6 +10,7 @@ import com.example.thesisproject.repository.UserSubjectRepository;
 import com.example.thesisproject.service.SubjectService;
 import com.example.thesisproject.service.UserService;
 import com.example.thesisproject.service.UserSubjectService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -60,13 +62,18 @@ public class UserController {
     public String renderSubjectsPage(@PathVariable Long userId, Model model) {
 
         List<Subject> subjects = subjectService.fetchSubjects();
-        User user = userRepository.findById(userId).orElseThrow();
+        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not Found with id " + userId));
 
-        List<UserSubject> userSubjects = userSubjectRepository.findUserSubjectsBySubjectId(userId);
+        List<TeachingType> allTeachingTypes = Arrays.asList(TeachingType.values());
+        model.addAttribute("allTeachingTypes", allTeachingTypes);
+
+        List<UserSubject> userSubjects = userSubjectRepository.findUserSubjectByUserId(userId);
 
         model.addAttribute("user", user);
-        model.addAttribute("user_subjects", userSubjects );
         model.addAttribute("subjects", subjects);
+        model.addAttribute("newRecord" , new UserSubject());
+        model.addAttribute("user_subjects", userSubjects );
+
 
 
         log.info("Fetched subjects: {}", subjects);
@@ -122,28 +129,37 @@ public class UserController {
 
         return "users/assignSubject";
     }
-    @PostMapping("/save")
-    public String saveSubjects(@PathVariable Long userId, @RequestParam("teachingTypes") List<String> teachingTypes) {
-        // Get the current user (you may need to modify this based on your authentication mechanism)
-        User user = userRepository.findById(userId).orElseThrow();
 
-        // Iterate over the selected teaching types and save UserSubjects
-        for (String teachingType : teachingTypes) {
-            Subject subject  = subjectRepository.findById(userId).orElseThrow();
-                    UserSubject userSubject = new UserSubject(user, subject, TeachingType.valueOf(teachingType));
-                    userSubjectRepository.save(userSubject);
+
+    @PostMapping("/{userId}")
+    public String addUserSubject(@PathVariable Long userId , @RequestParam Long subjectId, @ModelAttribute UserSubject userSubject, BindingResult result) {
+
+        if (result.hasErrors()) {
+            System.out.println("error occured");
         }
-//        UserSubject newdata = new UserSubject(user, )
+        User user = userRepository.findById(userId).orElseThrow();
+        Subject subject = subjectRepository.findById(subjectId).orElseThrow();
+
+//        boolean alreadyHasSubject = userSubjectRepository.existsByUserAndSubject(user, subject );
+//
+//        if (alreadyHasSubject) {
+//            System.out.println("User already has this subject");
+//            return "redirect:/users/{userId}";
+//        }
 
 
-        // Redirect to the page displaying available subjects
-        return "redirect:/users/all}";
-    }
+
+        userSubject.setUser(user);
+        userSubject.setSubject(subject);
+
+        userRepository.save(user);
+        subjectRepository.save(subject);
 
 
+        userSubjectRepository.save(userSubject);
 
 
-
+        return "redirect:/users/{userId}";    }
 
 
 

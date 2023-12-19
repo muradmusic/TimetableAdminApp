@@ -22,13 +22,15 @@ public class Subject {
     private Long id;
 
     private String subjectCode;
-//    private String subjectName;
 
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserSubject> userSubjects = new HashSet<>();
 
+    private boolean hasLabs;
 
-    public Subject(String subjectCode) {
+
+    public Subject(String subjectCode, boolean hasLabs) {
         this.subjectCode = subjectCode;
+        this.hasLabs = hasLabs;
     }
 }

@@ -43,8 +43,8 @@ public class TestDataInitializer implements CommandLineRunner {
             userRepository.save(user);
             userRepository.save(user1);
 
-            Subject subject = new Subject("BIE-PA1");
-            Subject subject1 = new Subject("BIE-TJV");
+            Subject subject = new Subject("BIE-PA1", true);
+            Subject subject1 = new Subject("BIE-TJV", false);
 
             subjectRepository.save(subject);
             subjectRepository.save(subject1);

@@ -12,7 +12,10 @@
     <div class="container-fluid">
         <a class="navbar-brand" th:href="@{/}" style="font-weight: bold;">Home</a>
         <div class="collapse navbar-collapse" id="mynavbar">
-            <ul class="navbar-nav ml-auto">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/subjects/all}">Subjects</a>
+                </li>
             </ul>
         </div>
     </div>
@@ -62,7 +65,7 @@
                 <td th:text="${userSubject.subject.subjectCode}"></td>
                 <td th:text="${userSubject.teachingType.name()}"></td>
                 <!-- Use static data for demonstration purposes -->
-                <td>YES</td>
+                <td>PENDING</td>
             </tr>
             </tbody>
         </table>
