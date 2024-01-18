@@ -13,4 +13,6 @@ public interface SubjectService {
     void createSubject(Subject subject);
 
     List<Subject> fetchSubjects();
+
+    Subject findSubjectBySubjectCode(String subjectCode);
 }

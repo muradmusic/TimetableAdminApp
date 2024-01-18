@@ -22,15 +22,22 @@ import java.util.List;
 @Transactional
 public class UserSubjectServiceImpl implements UserSubjectService {
 
+
     @Autowired
     private UserSubjectRepository userSubjectRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    public void createUserSubject(UserSubject userSubject) {
+        boolean userSubjectExists = userSubjectRepository.existsByUserAndSubjectAndTeachingType(
+                userSubject.getUser(),
+                userSubject.getSubject(),
+                userSubject.getTeachingType());
 
-    @Autowired
-
-    private SubjectRepository subjectRepository;
+        if (!userSubjectExists) {
+            userSubjectRepository.save(userSubject);
+        } else {
+            System.out.println("UserSubject already exists for user, subject, and teaching type combination.");
+        }
+    }
 
     @Override
     public List<UserSubject> fetchUserSubjects() {

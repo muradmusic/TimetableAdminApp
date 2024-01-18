@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 
 @Controller
@@ -62,6 +63,8 @@ public class UserController {
     public String renderSubjectsPage(@PathVariable Long userId, Model model) {
 
         List<Subject> subjects = subjectService.fetchSubjects();
+
+
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not Found with id " + userId));
 
         List<TeachingType> allTeachingTypes = Arrays.asList(TeachingType.values());
@@ -73,6 +76,7 @@ public class UserController {
         model.addAttribute("subjects", subjects);
         model.addAttribute("newRecord" , new UserSubject());
         model.addAttribute("user_subjects", userSubjects );
+
 
 
 
@@ -132,21 +136,21 @@ public class UserController {
 
 
     @PostMapping("/{userId}")
-    public String addUserSubject(@PathVariable Long userId , @RequestParam Long subjectId, @ModelAttribute UserSubject userSubject, BindingResult result) {
+    public String addUserSubject(@PathVariable Long userId , @RequestParam Long subjectId, @RequestParam TeachingType teachingType, @ModelAttribute UserSubject userSubject, BindingResult result, Model model) {
 
         if (result.hasErrors()) {
-            System.out.println("error occured");
+            System.out.println("error occurred");
         }
         User user = userRepository.findById(userId).orElseThrow();
         Subject subject = subjectRepository.findById(subjectId).orElseThrow();
 
-//        boolean alreadyHasSubject = userSubjectRepository.existsByUserAndSubject(user, subject );
-//
-//        if (alreadyHasSubject) {
-//            System.out.println("User already has this subject");
-//            return "redirect:/users/{userId}";
-//        }
+        boolean alreadyHasSubject = userSubjectRepository.existsByUserAndSubjectAndTeachingType(user, subject, teachingType);
 
+
+        if (alreadyHasSubject) {
+            System.out.println("User already has this subject");
+            return "redirect:/users/{userId}";
+        }
 
 
         userSubject.setUser(user);
@@ -154,9 +158,8 @@ public class UserController {
 
         userRepository.save(user);
         subjectRepository.save(subject);
-
-
         userSubjectRepository.save(userSubject);
+
 
 
         return "redirect:/users/{userId}";    }

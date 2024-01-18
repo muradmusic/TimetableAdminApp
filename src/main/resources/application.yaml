@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/new
+    username: postgres
+    password: password
+    driver-class-name: org.postgresql.Driver
+#  liquibase:
+#    change-log: classpath:/liquibase/changelog-master.yaml
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+  thymeleaf:
+    template-loader-path: classpath:/templates
+
+app:
+  url: http://localhost:8080/

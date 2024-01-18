@@ -7,6 +7,9 @@ import com.example.thesisproject.datamodel.enums.TeachingType;
 import com.example.thesisproject.repository.SubjectRepository;
 import com.example.thesisproject.repository.UserRepository;
 import com.example.thesisproject.repository.UserSubjectRepository;
+import com.example.thesisproject.service.SubjectService;
+import com.example.thesisproject.service.UserService;
+import com.example.thesisproject.service.UserSubjectService;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,48 +20,52 @@ import org.springframework.stereotype.Component;
 @Component
 public class TestDataInitializer implements CommandLineRunner {
 
-//    private static boolean initialized = false;
-
-    private final UserRepository userRepository;
-    private final SubjectRepository subjectRepository;
     private final UserSubjectRepository userSubjectRepository;
+    private final UserService userService;
+    private final SubjectService subjectService;
+
+    private final UserSubjectService userSubjectService;
 
     @Autowired
     public TestDataInitializer(
-            UserRepository userRepository,
-            SubjectRepository subjectRepository,
+            UserSubjectService userSubjectService,
+            UserService userService,
+            SubjectService subjectService,
             UserSubjectRepository userSubjectRepository
     ) {
-        this.userRepository = userRepository;
-        this.subjectRepository = subjectRepository;
+        this.userSubjectService = userSubjectService;
+        this.userService = userService;
+        this.subjectService = subjectService;
         this.userSubjectRepository = userSubjectRepository;
     }
 
     @Override
     public void run(String... args) throws Exception {
 
-            User user = new User("guthondr", "password");
-            User user1 = new User("mammamur", "password");
 
-            userRepository.save(user);
-            userRepository.save(user1);
 
-            Subject subject = new Subject("BIE-PA1", true);
-            Subject subject1 = new Subject("BIE-TJV", false);
+        User user = new User("guthondr", "password");
+        User user1 = new User("mammamur", "password");
 
-            subjectRepository.save(subject);
-            subjectRepository.save(subject1);
+        userService.createUser(user);
+        userService.createUser(user1);
 
-            // Create UserSubject instances with different teaching types
-            UserSubject lectureUserSubject = new UserSubject(user, subject, TeachingType.LECTURE);
-            UserSubject labUserSubject = new UserSubject(user, subject, TeachingType.LAB);
-            UserSubject lectureUserSubject1 = new UserSubject(user1, subject1, TeachingType.LECTURE);
-            UserSubject labUserSubject1 = new UserSubject(user1, subject1, TeachingType.LAB);
+        Subject subject = new Subject("BIE-PA1", true);
+        Subject subject1 = new Subject("BIE-TJV", false);
 
-            // Save the instances to the database
-            userSubjectRepository.save(lectureUserSubject);
-            userSubjectRepository.save(labUserSubject);
-            userSubjectRepository.save(lectureUserSubject1);
-            userSubjectRepository.save(labUserSubject1);
+        subjectService.createSubject(subject);
+        subjectService.createSubject(subject1);
+
+        UserSubject lectureUserSubject = new UserSubject(user, subject, TeachingType.LECTURE);
+        UserSubject labUserSubject = new UserSubject(user, subject, TeachingType.LAB);
+        UserSubject lectureUserSubject1 = new UserSubject(user1, subject1, TeachingType.LECTURE);
+        UserSubject labUserSubject1 = new UserSubject(user1, subject1, TeachingType.LAB);
+
+        userSubjectService.createUserSubject(lectureUserSubject);
+        userSubjectService.createUserSubject(labUserSubject);
+        userSubjectService.createUserSubject(lectureUserSubject1);
+        userSubjectService.createUserSubject(labUserSubject1);
+
+
         }
 }

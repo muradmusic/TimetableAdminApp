@@ -10,6 +10,7 @@ import java.util.List;
 @Service
 public interface UserSubjectService {
 
-//     void initializeTestData();
     List<UserSubject> fetchUserSubjects() ;
+
+    void createUserSubject(UserSubject userSubject);
 }

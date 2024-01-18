@@ -17,6 +17,11 @@ public class SubjectServiceImpl implements SubjectService {
 
     private SubjectRepository subjectRepository;
 
+    @Override
+    public Subject findSubjectBySubjectCode(String subjectCode) {
+        return findSubjectBySubjectCode(subjectCode);
+    }
+
     @Autowired
     public SubjectServiceImpl(SubjectRepository subjectRepository) {
         this.subjectRepository= subjectRepository;
@@ -27,22 +32,14 @@ public class SubjectServiceImpl implements SubjectService {
         return subjectRepository.findAll() ;
     }
 
-    @Override
     public void createSubject(Subject subject) {
-         subjectRepository.save(subject);
+        // Check if the subject with the same code already exists
+        Subject existingSubject = subjectRepository.findBySubjectCode(subject.getSubjectCode());
+        if (existingSubject == null) {
+            subjectRepository.save(subject);
+        } else {
+            System.out.println("Subject with code " + subject.getSubjectCode() + " already exists.");
+        }
     }
-    //    @Override
-//    @PostConstruct
-//    public void initializeTestData() {
-//
-//        Subject subject = new Subject("BIE-PA1");
-//        Subject subject1 = new Subject("BIE-TJV");
-//
-//
-//        subjectRepository.save(subject);
-//        subjectRepository.save(subject1);
-//
-//
-//
-//    }
+
 }

@@ -46,4 +46,6 @@ public class UserSubject {
                 ", teachingType='" + teachingType + '\'' +
                 '}';
     }
+
+
 }

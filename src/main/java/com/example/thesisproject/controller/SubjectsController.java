@@ -62,6 +62,7 @@ public class SubjectsController {
     @GetMapping("/{subjectId}")
     public String renderSubjectsPage(@PathVariable Long subjectId,  Model model) {
 
+        log.info("ActionLog.renderSubjectsPage.start with subjectId: {}", subjectId);
         List<User> users = userService.fetchUsers();
         Subject subject = subjectRepository.findById(subjectId).orElseThrow();
 
@@ -74,6 +75,7 @@ public class SubjectsController {
 
         log.info("Fetched users: {}", users);
         log.info("Fetched user subjects: {}", userSubjects);
+        log.info("ActionLog.renderSubjectsPage.end with subjectId: {}", subjectId);
         return "subjects/subject";
     }
 

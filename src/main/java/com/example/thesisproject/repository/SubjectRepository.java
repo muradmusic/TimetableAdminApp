@@ -9,5 +9,5 @@ import java.util.Optional;
 @Repository
 public interface SubjectRepository extends JpaRepository<Subject, Long> {
 
-    Optional<Subject> findBySubjectCode(String subjectCode);
+    Subject findBySubjectCode(String subjectCode);
 }

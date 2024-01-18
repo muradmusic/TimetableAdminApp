@@ -52,6 +52,36 @@
     </table>
   </div>
 
+  </table>  <table class="table table-bordered">
+  <thead class="thead-dark">
+  <tr>
+    <th>Subject Code</th>
+    <th>Lecture</th>
+    <th>Lab</th>
+    <th>Seminar</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="userSubject : ${user_subjects}">
+    <td th:text="${userSubject.subject.subjectCode}"></td>
+    <td>
+      <input type="checkbox" name="teachingTypes" value="LECTURE" th:checked="${userSubject.teachingType.name() == 'LECTURE'}" />
+    </td>
+    <td>
+      <input type="checkbox" name="teachingTypes" value="LAB" th:checked="${userSubject.teachingType.name() == 'LAB'}" />
+    </td>
+    <td>
+      <input type="checkbox" name="teachingTypes" value="SEMINAR" th:checked="${userSubject.teachingType.name() == 'SEMINAR'}" />
+    </td>
+
+  </tr>
+
+  </tr>
+  </tbody>
+</table>
+
+
+
 <!--  -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
 
   <h1 class="py-5">Adding new Subject</h1>

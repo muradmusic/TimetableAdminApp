@@ -11,8 +11,6 @@ public interface UserService {
 
     List<User> fetchUsers();
 
-//    void initializeTestData();
-//
     void createUser(User user);
 
 }
