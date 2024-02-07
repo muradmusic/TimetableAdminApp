@@ -26,6 +26,9 @@ public class UserSubjectServiceImpl implements UserSubjectService {
     @Autowired
     private UserSubjectRepository userSubjectRepository;
 
+    @Autowired
+    private SubjectRepository subjectRepository;
+
     public void createUserSubject(UserSubject userSubject) {
         boolean userSubjectExists = userSubjectRepository.existsByUserAndSubjectAndTeachingType(
                 userSubject.getUser(),
@@ -42,5 +45,17 @@ public class UserSubjectServiceImpl implements UserSubjectService {
     @Override
     public List<UserSubject> fetchUserSubjects() {
         return userSubjectRepository.findAll();
+    }
+    public void updateMinMaxValues(Long userId, List<UserSubject> userSubjects) {
+        for (UserSubject userSubject : userSubjects) {
+            if (userSubject.getSubject() != null && userSubject.getSubject().isHasLabs()) {
+                Subject subject = userSubject.getSubject();
+                // Update min and max values based on requirements
+                subject.setMinValue(userSubject.getSubject().getMinValue());
+                subject.setMaxValue(userSubject.getSubject().getMaxValue());
+                subjectRepository.save(subject);
+            }
+        }
+        userSubjectRepository.saveAll(userSubjects);
     }
 }

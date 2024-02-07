@@ -13,4 +13,6 @@ public interface UserSubjectService {
     List<UserSubject> fetchUserSubjects() ;
 
     void createUserSubject(UserSubject userSubject);
-}
+     void updateMinMaxValues(Long userId, List<UserSubject> userSubjects);
+
+    }

@@ -23,6 +23,9 @@ public class Subject {
 
     private String subjectCode;
 
+    private int minValue = -1;
+    private int maxValue = -1;
+
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserSubject> userSubjects = new HashSet<>();
 

@@ -1,5 +1,6 @@
 package com.example.thesisproject.datamodel.entity;
 
+import com.example.thesisproject.datamodel.enums.Decision;
 import com.example.thesisproject.datamodel.enums.TeachingType;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -26,6 +27,11 @@ public class UserSubject {
     @Enumerated(EnumType.STRING)
     @Column(name = "teaching_type")
     private TeachingType teachingType;
+
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "decision")
+    private Decision decision;
 
 //    @Enumerated(EnumType.STRING)
 //    private UserRole userRole;

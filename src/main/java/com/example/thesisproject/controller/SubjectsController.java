@@ -2,10 +2,13 @@ package com.example.thesisproject.controller;
 
 import com.example.thesisproject.datamodel.entity.User;
 import com.example.thesisproject.datamodel.entity.UserSubject;
+import com.example.thesisproject.datamodel.enums.TeachingType;
 import com.example.thesisproject.repository.SubjectRepository;
+import com.example.thesisproject.repository.UserRepository;
 import com.example.thesisproject.repository.UserSubjectRepository;
 import com.example.thesisproject.service.SubjectService;
 import com.example.thesisproject.service.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import com.example.thesisproject.datamodel.entity.Subject;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -31,6 +35,9 @@ public class SubjectsController {
 
     @Autowired
     private SubjectRepository subjectRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private SubjectService subjectService;
@@ -63,14 +70,19 @@ public class SubjectsController {
     public String renderSubjectsPage(@PathVariable Long subjectId,  Model model) {
 
         log.info("ActionLog.renderSubjectsPage.start with subjectId: {}", subjectId);
+
         List<User> users = userService.fetchUsers();
         Subject subject = subjectRepository.findById(subjectId).orElseThrow();
 
         List<UserSubject> userSubjects = userSubjectRepository.findUserSubjectsBySubjectId(subject.getId());
+        List<TeachingType> allTeachingTypes = Arrays.asList(TeachingType.values());
 
         model.addAttribute("users", users);
         model.addAttribute("user_subjects", userSubjects );
         model.addAttribute("subject", subject);
+        model.addAttribute("allTeachingTypes", allTeachingTypes);
+        model.addAttribute("newRecord" , new UserSubject());
+
 
 
         log.info("Fetched users: {}", users);
@@ -91,10 +103,51 @@ public class SubjectsController {
         if (result.hasErrors()) {
             return "subjects/createSubject";
         }
-
         subjectService.createSubject(subject);
 
         return "redirect:/subjects/all";
+    }
+
+
+    @PostMapping("/{subjectId}/delete")
+    public String deleteSubject(@PathVariable Long subjectId) {
+
+
+        if (subjectRepository.existsById(subjectId)) {
+
+            subjectRepository.deleteById(subjectId);
+            return "redirect:/subjects/all";
+
+        } else {
+            throw new EntityNotFoundException("Subject with ID " + subjectId + " not found");
+        }
+    }
+
+    @PostMapping("/{subjectId}")
+    public String addUserSubject(@PathVariable Long subjectId , @RequestParam Long userId, @RequestParam TeachingType teachingType, @ModelAttribute UserSubject userSubject, BindingResult result, Model model) {
+
+        if (result.hasErrors()) {
+            System.out.println("error occurred");
+        }
+        User user = userRepository.findById(userId).orElseThrow();
+        Subject subject = subjectRepository.findById(subjectId).orElseThrow();
+
+        boolean alreadyHasSubject = userSubjectRepository.existsByUserAndSubjectAndTeachingType(user, subject, teachingType);
+
+
+        if (alreadyHasSubject) {
+            System.out.println("User already has this subject");
+            return "redirect:/subjects/{subjectId}";
+        }
+
+        userSubject.setUser(user);
+        userSubject.setSubject(subject);
+
+        userRepository.save(user);
+        subjectRepository.save(subject);
+        userSubjectRepository.save(userSubject);
+
+        return "redirect:/subjects/{subjectId}";
     }
 
 

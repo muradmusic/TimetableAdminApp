@@ -11,7 +11,13 @@
   <div class="container-fluid">
     <a class="navbar-brand" th:href="@{/}" style="font-weight: bold;">Home</a>
     <div class="collapse navbar-collapse" id="mynavbar">
-      <ul class="navbar-nav ml-auto">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/users/all}">Users</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/subjects/all}">Subjects</a>
+        </li>
       </ul>
     </div>
   </div>
@@ -29,7 +35,6 @@
     </thead>
   </table>
 
-
   <div th:if="${user_subjects}">
     <h2>User Subjects</h2>
     <table class="table table-bordered">
@@ -42,13 +47,71 @@
       </thead>
       <tbody>
       <tr th:each="userSubject : ${user_subjects}">
-        <td th:text="${userSubject.user.username}"></td>
+        <td>
+          <a th:href="@{'/users/' + ${userSubject.user.id}}">
+          <span th:text="${userSubject.user.username}"></span>
+        </a>
+        </td>
         <td th:text="${userSubject.teachingType.name()}"></td>
-        <td>YES</td>
+        <td>Pending</td>
       </tr>
       </tbody>
     </table>
   </div>
+
+  </table>  <table class="table table-bordered">
+  <thead class="thead-dark">
+  <tr>
+    <th>Username</th>
+    <th>Lecture</th>
+    <th>Lab</th>
+    <th>Seminar</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="userSubject : ${user_subjects}">
+    <td th:text="${userSubject.user.username}"></td>
+    <td>
+      <input type="checkbox" name="teachingTypes" value="LECTURE" th:checked="${userSubject.teachingType.name() == 'LECTURE'}" />
+    </td>
+    <td>
+      <input type="checkbox" name="teachingTypes" value="LAB" th:checked="${userSubject.teachingType.name() == 'LAB'}" />
+    </td>
+    <td>
+      <input type="checkbox" name="teachingTypes" value="SEMINAR" th:checked="${userSubject.teachingType.name() == 'SEMINAR'}" />
+    </td>
+  </tr>
+  </tr>
+  </tbody>
+</table>
+
+
+  <h1 class="py-5">Adding New Record</h1>
+  <form action="/subjects/{subjectId}" method="post" th:object="${newRecord}" th:action="@{'/subjects/' + ${subject.id}}">
+
+    <div class="form-group">
+      <label for="user">Select User:</label>
+      <select class="form-control" id="userId" name="userId" required>
+        <option hidden value="">Select a subject</option>
+        <option th:each="user : ${users}" th:value="${user.id}" th:text="${user.username}"></option>
+      </select>
+    </div>
+    <script>
+      $(document).ready(function () {
+        $('#subjectId').select2();
+      });
+    </script>
+
+    <div class="form-group">
+      <label for="teachingType">Teaching Type:</label>
+      <select class="form-control" id="teachingType" name="teachingType" required>
+        <option hidden value="">Select a teaching type</option>
+        <option th:each="teachingType : ${allTeachingTypes}" th:value="${teachingType.name()}" th:text="${teachingType.name()}"></option>
+      </select>
+    </div>
+
+    <input class="btn btn-primary" type="submit" value="Create Record">
+  </form>
 
 </div>
 
