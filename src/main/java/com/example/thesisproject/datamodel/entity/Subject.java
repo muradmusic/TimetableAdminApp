@@ -1,6 +1,7 @@
 package com.example.thesisproject.datamodel.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,9 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @Table(name = "subjects")
 @Entity
@@ -23,17 +22,22 @@ public class Subject {
 
     private String subjectCode;
 
-    private int minValue = -1;
-    private int maxValue = -1;
-
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserSubject> userSubjects = new HashSet<>();
 
     private boolean hasLabs;
 
+    private int desiredLab;
 
     public Subject(String subjectCode, boolean hasLabs) {
         this.subjectCode = subjectCode;
+        this.hasLabs = hasLabs;
+    }
+    public boolean hasLabs() {
+        return hasLabs;
+    }
+
+    public void setHasLabs(boolean hasLabs) {
         this.hasLabs = hasLabs;
     }
 }

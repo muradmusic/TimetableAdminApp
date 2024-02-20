@@ -34,6 +34,10 @@
       <th>ID</th>
       <th>Subject Code</th>
       <th>Approved by All</th>
+      <th>Has Labs</th>
+      <th>Lab Requirement</th>
+      <th>Lab Range</th>
+      <th>Edit</th>
       <th>Delete</th>
     </tr>
     </thead>
@@ -41,11 +45,19 @@
     <tr th:each="subject : ${subjects}">
       <td th:text="${subject.id}"></td>
       <td>
-        <a th:href="@{'/subjects/' + ${subject.id}}"> <!-- Make subject code a dynamic link -->
+        <a th:href="@{'/subjects/' + ${subject.id}}">
           <span th:text="${subject.subjectCode}"></span>
         </a>
       </td>
       <td>No</td>
+      <td th:text="${subject.hasLabs}"></td>
+      <td th:text="${subject.desiredLab}"></td>
+      <td th:text="${currentLabSumsMin[subject.id]} + '-' + ${currentLabSumsMax[subject.id]}"></td>
+      <td>
+        <form th:action="@{'/subjects/' + ${subject.id} + '/edit'}" method="get">
+          <button type="submit" class="btn btn-primary">Edit</button>
+        </form>
+      </td>
       <td>
         <form th:action="@{${subject.id} + '/delete'}" method="post"
               onsubmit="return confirm('Are you sure you want to delete this subject? All related data will also be deleted!');">
@@ -55,32 +67,6 @@
     </tr>
     </tbody>
   </table>
-
-  <script>
-    function confirmDelete(subjectId) {
-      var txt;
-      if (confirm("Are you sure you want to delete this subject?")) {
-        txt = "Deleted!";
-        // If the user clicks OK, submit the corresponding form
-        document.getElementById('deleteForm_' + subjectId).submit();
-      } else {
-        txt = "Cancel!";
-        // If the user clicks Cancel, do nothing
-      }
-      console.log(txt);
-    }
-    function deleteSubject(subjectId) {
-      // You can perform the actual deletion logic here, for example, submitting the form
-      // console.log('deleteForm_' + 'subjec');
-      console.log('Attempting to submit form with ID:', 'deleteForm_' + subjectId);
-
-      document.getElementById('deleteForm_' + subjectId).submit();
-    }
-  </script>
-
-
-
-
 
 </div>
 

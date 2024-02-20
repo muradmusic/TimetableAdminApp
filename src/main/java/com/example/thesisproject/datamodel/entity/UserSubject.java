@@ -33,6 +33,8 @@ public class UserSubject {
     @Column(name = "decision")
     private Decision decision;
 
+    private int minLab = 0;
+    private int maxLab = 0;
 //    @Enumerated(EnumType.STRING)
 //    private UserRole userRole;
 

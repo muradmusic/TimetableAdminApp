@@ -4,7 +4,9 @@ package com.example.thesisproject.service;
 import com.example.thesisproject.datamodel.entity.Subject;
 import com.example.thesisproject.repository.SubjectRepository;
 import com.example.thesisproject.repository.UserRepository;
+import com.example.thesisproject.repository.UserSubjectRepository;
 import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,14 +19,20 @@ public class SubjectServiceImpl implements SubjectService {
 
     private SubjectRepository subjectRepository;
 
+    private UserSubjectRepository userSubjectRepository;
+
+
+
     @Override
     public Subject findSubjectBySubjectCode(String subjectCode) {
         return findSubjectBySubjectCode(subjectCode);
     }
 
     @Autowired
-    public SubjectServiceImpl(SubjectRepository subjectRepository) {
+    public SubjectServiceImpl(SubjectRepository subjectRepository, UserSubjectRepository userSubjectRepository) {
         this.subjectRepository= subjectRepository;
+        this.userSubjectRepository = userSubjectRepository;
+
     }
 
     @Override
@@ -40,6 +48,14 @@ public class SubjectServiceImpl implements SubjectService {
         } else {
             System.out.println("Subject with code " + subject.getSubjectCode() + " already exists.");
         }
+    }
+    public void deleteSubject(Long subjectId) {
+        Subject subject = subjectRepository.findById(subjectId)
+                .orElseThrow(() -> new EntityNotFoundException("Subject with ID " + subjectId + " not found"));
+
+        userSubjectRepository.deleteBySubjectId(subjectId);
+
+        subjectRepository.delete(subject);
     }
 
 }
