@@ -81,6 +81,7 @@ public class UserController {
         }
 
         model.addAttribute("user", user);
+        model.addAttribute("userId", userId);
         model.addAttribute("subjects", subjects);
         model.addAttribute("newRecord" , new UserSubject());
         model.addAttribute("user_subjects", userSubjects );

@@ -88,6 +88,7 @@ public class SubjectsController {
         }
 
         model.addAttribute("users", users);
+        model.addAttribute("subjectId", subjectId);
         model.addAttribute("subject", subject);
         model.addAttribute("allTeachingTypes", allTeachingTypes);
         model.addAttribute("subjectsMap", subjectsMap);

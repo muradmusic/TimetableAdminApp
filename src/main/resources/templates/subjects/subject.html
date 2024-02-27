@@ -6,6 +6,8 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
+<meta name="csrf-token" content="${_csrf.token}"/>
+
 
 <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
   <div class="container-fluid">
@@ -75,10 +77,12 @@
             </select>
           </td>
           <td>
-            <form th:action="@{/subjects/{subjectId}/deleteUserSubject(subjectId=${subjectId})}" method="post">
-              <input type="hidden" name="userSubjectId" th:value="${userSubject.id}" />
-              <button type="submit" class="btn btn-danger">Delete</button>
-            </form>
+            <button type="button" class="btn btn-danger delete-btn"
+                    th:data-user-subject-id="${userSubject.id}"
+                    th:data-user-id="${subjectId}"
+                    onclick="confirmDelete(this)">
+              Delete
+            </button>
           </td>
         </tr>
         </tbody>
@@ -160,7 +164,6 @@
 
   <h1 class="py-5">Adding New Record</h1>
   <form action="/subjects/{subjectId}" method="post" th:object="${newRecord}" th:action="@{'/subjects/' + ${subject.id}}">
-
     <div class="form-group">
       <label for="user">Select User:</label>
       <select class="form-control" id="userId" name="userId" required>
@@ -168,12 +171,6 @@
         <option th:each="user : ${users}" th:value="${user.id}" th:text="${user.username}"></option>
       </select>
     </div>
-    <script>
-      $(document).ready(function () {
-        $('#subjectId').select2();
-      });
-    </script>
-
     <div class="form-group">
       <label for="teachingType">Teaching Type:</label>
       <select class="form-control" id="teachingType" name="teachingType" required>
@@ -181,11 +178,39 @@
         <option th:each="teachingType : ${allTeachingTypes}" th:value="${teachingType.name()}" th:text="${teachingType.name()}"></option>
       </select>
     </div>
-
     <input class="btn btn-primary" type="submit" value="Create Record">
   </form>
-
 </div>
+
+
+<script>
+  function confirmDelete(element) {
+
+    var userSubjectId = element.getAttribute('data-user-subject-id');
+    var subjectId = element.getAttribute('data-user-id');
+    var confirmed = confirm('Are you sure you want to delete this record?');
+
+    if (confirmed) {
+      //  AJAX request to delete the user subject
+      fetch(`/subjects/${subjectId}/deleteUserSubject?userSubjectId=${userSubjectId}`, {
+        method: 'POST',
+        headers: {
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        },
+      })
+              .then(response => {
+                if (response.ok) {
+                  // Handle successful deletion, e.g., remove the row from the table or refresh the page
+                  window.location.reload();
+                } else {
+                  alert('Failed to delete the record.');
+                }
+              })
+              .catch(error => console.error('Error deleting the record:', error));
+    }
+  }
+</script>
+
 
 </body>
 </html>
