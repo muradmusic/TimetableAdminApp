@@ -29,12 +29,16 @@ public class Subject {
 
     private int desiredLab;
 
+    private boolean approvedAll;
     public Subject(String subjectCode, boolean hasLabs) {
         this.subjectCode = subjectCode;
         this.hasLabs = hasLabs;
     }
     public boolean hasLabs() {
         return hasLabs;
+    }
+    public boolean approvedAll(){
+        return approvedAll;
     }
 
     public void setHasLabs(boolean hasLabs) {

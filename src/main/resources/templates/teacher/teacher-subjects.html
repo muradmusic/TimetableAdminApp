@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Subject</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/}" style="font-weight: bold;">Home</a>
+        <div class="collapse navbar-collapse" id="mynavbar">
+<!--            <ul class="navbar-nav me-auto">-->
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" th:href="@{/users/all}">Users</a>-->
+<!--                </li>-->
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" th:href="@{/subjects/all}">Subjects</a>-->
+<!--                </li>-->
+<!--            </ul>-->
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+
+    <h2> Registered Subjects for Teacher :</h2>
+    <table class="table table-bordered">
+        <thead class="thead-dark">
+        <tr th:each="username : ${user}">
+            <th th:text="${user.username}"></th>
+        </tr>
+        </thead>
+    </table>
+
+    <div th:if="${user_subjects}">
+        <h2>Records</h2>
+        <form th:action="@{/teacher/{userId}/changeDecision(userId=${userId})}" method="post">
+            <table class="table table-bordered">
+                <thead class="thead-dark">
+                <tr>
+                    <th>Subject</th>
+                    <th>Teaching Type</th>
+                    <th>Decision to Teach</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="userSubject : ${user_subjects}">
+                    <td th:text="${userSubject.subject.subjectCode}"></td>
+                    <td th:text="${userSubject.teachingType.name()}"></td>
+                    <td>
+                        <select th:name="|decision-${userSubject.id}|" id="|decision-${userSubject.id}|">
+                            <option value="PENDING" th:selected="${userSubject.decision == T(com.example.thesisproject.datamodel.enums.Decision).PENDING}">PENDING</option>
+                            <option value="YES" th:selected="${userSubject.decision == T(com.example.thesisproject.datamodel.enums.Decision).YES}">YES</option>
+                            <option value="NO" th:selected="${userSubject.decision == T(com.example.thesisproject.datamodel.enums.Decision).NO}">NO</option>
+                        </select>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <button type="submit" class="btn btn-primary" onclick="return confirm('Are you sure you want to save this data? Your selection will appear to the admin!');">Save Changes</button>
+        </form>
+    </div>
+
+
+
+    <div th:if="${user_subjects}">
+        <h2>Lab Subjects</h2>
+        <form th:action="@{'/teacher/' + ${userId} + '/labs'}" method="post">
+            <table class="table table-bordered">
+                <thead class="thead-dark">
+                <tr>
+                    <th>Subject</th>
+                    <th>Min</th>
+                    <th>Max</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="userSubject : ${user_subjects}" th:if="${userSubject.subject.hasLabs and userSubject.teachingType.name() == 'LAB'}">
+                    <td th:text="${userSubject.subject.subjectCode}"></td>
+                    <td>
+                        <!-- Include userSubject.id in the name attribute -->
+                        <input type="number" th:name="'minLab[' + ${userSubject.id} + ']'" th:value="${userSubject.minLab}" class="form-control" min="0" />
+                    </td>
+                    <td>
+                        <!-- Include userSubject.id in the name attribute -->
+                        <input type="number" th:name="'maxLab[' + ${userSubject.id} + ']'" th:value="${userSubject.maxLab}" class="form-control" min="0"/>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
+    </div>
+
+
+    <!--    -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
+
+
+
+
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.0/css/select2.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.0/js/select2.min.js"></script>
+
+</body>
+</html>

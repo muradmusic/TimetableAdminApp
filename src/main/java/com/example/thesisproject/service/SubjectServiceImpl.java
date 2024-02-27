@@ -2,6 +2,9 @@ package com.example.thesisproject.service;
 
 
 import com.example.thesisproject.datamodel.entity.Subject;
+import com.example.thesisproject.datamodel.entity.UserSubject;
+import com.example.thesisproject.datamodel.enums.Decision;
+import com.example.thesisproject.datamodel.enums.TeachingType;
 import com.example.thesisproject.repository.SubjectRepository;
 import com.example.thesisproject.repository.UserRepository;
 import com.example.thesisproject.repository.UserSubjectRepository;
@@ -12,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -20,7 +24,6 @@ public class SubjectServiceImpl implements SubjectService {
     private SubjectRepository subjectRepository;
 
     private UserSubjectRepository userSubjectRepository;
-
 
 
     @Override

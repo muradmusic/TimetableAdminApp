@@ -56,20 +56,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/{userId}/changeDecision")
-    public String changeDecision(@PathVariable Long userId, HttpServletRequest request) {
-        Map<String, String[]> parameters = request.getParameterMap();
-        for (String key : parameters.keySet()) {
-            if (key.startsWith("decision-")) {
-                Long userSubjectId = Long.parseLong(key.split("-")[1]);
-                String decisionValue = parameters.get(key)[0];
-                UserSubject userSubject = userSubjectRepository.findById(userSubjectId).orElseThrow();
-                userSubject.setDecision(Decision.valueOf(decisionValue));
-                userSubjectRepository.save(userSubject);
-            }
-        }
-        return "redirect:/users/{userId}";
-    }
+
 
     @GetMapping("/{userId}")
     public String renderUserPage(@PathVariable Long userId, Model model) {
@@ -151,8 +138,9 @@ public String deleteUser(@PathVariable Long userId) {
         throw new EntityNotFoundException("User with ID " + userId + " not found");
     }
 }
+
     @PostMapping("/{userId}/deleteUserSubject")
-    public String deleteUserSubject(@PathVariable Long userId, @RequestParam Long userSubjectId) {
+    public String deleteUserSubject(@PathVariable Long userId,  @RequestParam Long userSubjectId) {
 
 
         if (userSubjectRepository.existsById(userSubjectId)) {
@@ -217,6 +205,21 @@ public String updateLabs(@PathVariable Long userId,
     redirectAttributes.addFlashAttribute("success", "Labs updated successfully.");
     return "redirect:/users/" + userId;
 }
+
+    @PostMapping("/{userId}/changeDecision")
+    public String changeDecision(@PathVariable Long userId, HttpServletRequest request) {
+        Map<String, String[]> parameters = request.getParameterMap();
+        for (String key : parameters.keySet()) {
+            if (key.startsWith("decision-")) {
+                Long userSubjectId = Long.parseLong(key.split("-")[1]);
+                String decisionValue = parameters.get(key)[0];
+                UserSubject userSubject = userSubjectRepository.findById(userSubjectId).orElseThrow();
+                userSubject.setDecision(Decision.valueOf(decisionValue));
+                userSubjectRepository.save(userSubject);
+            }
+        }
+        return "redirect:/users/{userId}";
+    }
 
     @PostMapping("/saveUserSubjectChanges/{userId}")
     @Transactional

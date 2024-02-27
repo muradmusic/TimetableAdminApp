@@ -26,38 +26,69 @@
 
 <div class="container mt-4">
 
-  <h2>Teachers Registered for Subject:</h2>
+<!--  <h2>Teachers Registered for Subject:</h2>-->
+<!--  <table class="table table-bordered">-->
+<!--    <thead class="thead-dark">-->
+<!--    <tr th:each="subjectCode : ${subject}">-->
+<!--      <th th:text="${subjectCode.subjectCode}"></th>-->
+<!--    </tr>-->
+<!--    </thead>-->
+<!--  </table>-->
+  <!--  <h2> <span th:text="${subject.subjectCode}"></span></h2>-->
   <table class="table table-bordered">
     <thead class="thead-dark">
-    <tr th:each="subjectCode : ${subject}">
-      <th th:text="${subjectCode.subjectCode}"></th>
-    </tr>
     </thead>
+    <tbody>
+    <tr>
+      <td><strong>Subject Code:</strong> <span th:text="${subject.subjectCode}"></span></td>
+    </tr>
+    </tbody>
+    <td  th:text="'Haslabs:' + ${subject.hasLabs}"></td>
+
   </table>
 
   <div th:if="${user_subjects}">
-    <h2>User Subjects</h2>
-    <table class="table table-bordered">
-      <thead class="thead-dark">
-      <tr>
-        <th>Username</th>
-        <th>Teaching Type</th>
-        <th>Decison to Teach</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr th:each="userSubject : ${user_subjects}">
-        <td>
-          <a th:href="@{'/users/' + ${userSubject.user.id}}">
-          <span th:text="${userSubject.user.username}"></span>
-        </a>
-        </td>
-        <td th:text="${userSubject.teachingType.name()}"></td>
-        <td>Pending</td>
-      </tr>
-      </tbody>
-    </table>
+    <h2>Records</h2>
+    <form th:action="@{/subjects/{subjectId}/changeDecision(subjectId=${subjectId})}" method="post">
+      <table class="table table-bordered">
+        <thead class="thead-dark">
+        <tr>
+          <th>User</th>
+          <th>Teaching Type</th>
+          <th>Decision to Teach</th>
+          <th>Delete</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="userSubject : ${user_subjects}">
+          <td>
+            <a th:href="@{'/users/' + ${userSubject.user.id}}">
+              <span th:text="${userSubject.user.username}"></span>
+            </a>
+          </td>
+          <td th:text="${userSubject.teachingType.name()}"></td>
+          <td>
+            <select th:name="|decision-${userSubject.id}|" id="|decision-${userSubject.id}|">
+              <option value="PENDING" th:selected="${userSubject.decision == T(com.example.thesisproject.datamodel.enums.Decision).PENDING}">PENDING</option>
+              <option value="YES" th:selected="${userSubject.decision == T(com.example.thesisproject.datamodel.enums.Decision).YES}">YES</option>
+              <option value="NO" th:selected="${userSubject.decision == T(com.example.thesisproject.datamodel.enums.Decision).NO}">NO</option>
+            </select>
+          </td>
+          <td>
+            <form th:action="@{/subjects/{subjectId}/deleteUserSubject(subjectId=${subjectId})}" method="post">
+              <input type="hidden" name="userSubjectId" th:value="${userSubject.id}" />
+              <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
   </div>
+
+
+
   <form th:action="@{'/saveSubjectChanges'}" method="post">
     <table class="table table-bordered">
       <thead class="thead-dark">
@@ -66,8 +97,6 @@
         <th>Lecture</th>
         <th>Lab</th>
         <th>Seminar</th>
-        <th>Min Lab</th>
-        <th>Max Lab</th>
       </tr>
       </thead>
       <tbody>
@@ -82,11 +111,6 @@
         <td>
           <input type="checkbox" th:name="|${subjectEntry.key}-SEMINAR|" th:checked="${subjectEntry.value.teachingTypes['SEMINAR']}" />
         </td>
-        <td th:text="${subjectEntry.value.minLab}"></td>
-        <td th:text="${subjectEntry.value.maxLab}"></td>
-<!--        <td th:if="${subjectEntry.value.teachingTypes['LAB']}" th:text="${subjectEntry.value.minLab} ?: 'NoLAB'"></td>-->
-<!--        <td th:if="${subjectEntry.value.teachingTypes['LAB']}" th:text="${subjectEntry.value.maxLab} ?: 'NoLAB'"></td>-->
-<!--        <td th:if="${!subjectEntry.value.teachingTypes['LAB']}" colspan="2">NoLAB</td>-->
       </tr>
       </tbody>
     </table>
@@ -101,13 +125,46 @@
     <button type="submit" class="btn btn-primary">Save Changes</button>
   </form>
 
+  <div th:if="${user_subjects}">
+    <h2>Lab Teachers</h2>
+    <form th:action="@{'/subjects/' + ${subjectId} + '/labs'}" method="post">
+      <table class="table table-bordered">
+        <thead class="thead-dark">
+        <tr>
+          <th>User</th>
+          <th>Min</th>
+          <th>Max</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="userSubject : ${user_subjects}" th:if="${userSubject.subject.hasLabs and userSubject.teachingType.name() == 'LAB'}">
+          <td>
+            <a th:href="@{'/users/' + ${userSubject.user.id}}">
+              <span th:text="${userSubject.user.username}"></span>
+            </a>
+          </td>
+          <td>
+            <input type="number" th:name="'minLab[' + ${userSubject.id} + ']'" th:value="${userSubject.minLab}" class="form-control" min="0" />
+          </td>
+          <td>
+            <input type="number" th:name="'maxLab[' + ${userSubject.id} + ']'" th:value="${userSubject.maxLab}" class="form-control" min="0"/>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+  </div>
+
+
+
   <h1 class="py-5">Adding New Record</h1>
   <form action="/subjects/{subjectId}" method="post" th:object="${newRecord}" th:action="@{'/subjects/' + ${subject.id}}">
 
     <div class="form-group">
       <label for="user">Select User:</label>
       <select class="form-control" id="userId" name="userId" required>
-        <option hidden value="">Select a subject</option>
+        <option hidden value="">Select a user</option>
         <option th:each="user : ${users}" th:value="${user.id}" th:text="${user.username}"></option>
       </select>
     </div>

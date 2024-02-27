@@ -49,8 +49,11 @@
           <span th:text="${subject.subjectCode}"></span>
         </a>
       </td>
-      <td>No</td>
-      <td th:text="${subject.hasLabs}"></td>
+      <td th:text="${subject.approvedAll}"></td>
+<!--      <td th:text = "${approvedByAllMap}">-->
+<!--      </td>-->
+
+      <td th:text ="${subject.hasLabs}"></td>
       <td th:text="${subject.desiredLab}"></td>
       <td th:text="${currentLabSumsMin[subject.id]} + '-' + ${currentLabSumsMax[subject.id]}"></td>
       <td>

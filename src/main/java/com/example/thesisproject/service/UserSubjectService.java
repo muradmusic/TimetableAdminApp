@@ -14,7 +14,6 @@ public interface UserSubjectService {
 
     void createUserSubject(UserSubject userSubject);
 
-//    void updateMinMaxValues(Long userId, List<UserSubject> userSubjects);
 
     void updateLabValuesForSuitableSubjects(List<UserSubject> userSubjects, int minLab, int maxLab);
 }

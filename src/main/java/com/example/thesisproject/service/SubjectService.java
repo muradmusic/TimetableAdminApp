@@ -1,6 +1,7 @@
 package com.example.thesisproject.service;
 
 import com.example.thesisproject.datamodel.entity.Subject;
+import com.example.thesisproject.datamodel.entity.UserSubject;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -18,4 +19,5 @@ public interface SubjectService {
     Subject findSubjectBySubjectCode(String subjectCode);
 
     void deleteSubject(Long subjectId);
+
 }
