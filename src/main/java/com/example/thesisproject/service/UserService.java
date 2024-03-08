@@ -13,5 +13,6 @@ public interface UserService {
 
     void createUser(User user);
 
+    void assignRoleToUser(String username, String roleName);
 }
 
