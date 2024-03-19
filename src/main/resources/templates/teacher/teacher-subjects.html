@@ -9,11 +9,13 @@
 
 <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" th:href="@{/}" style="font-weight: bold;">Home</a>
+        <a class="navbar-brand" th:href="@{/teacher/{userId}(userId=${userId})}" style="font-weight: bold;">Home</a>
         <div class="collapse navbar-collapse" id="mynavbar">
+            <ul class="navbar-nav me-auto">
             <li class="nav-item">
                 <a class="nav-link" th:href="@{/logout}">Logout</a>
             </li>
+            </ul>
         </div>
     </div>
 </nav>
@@ -75,11 +77,9 @@
                 <tr th:each="userSubject : ${user_subjects}" th:if="${userSubject.subject.hasLabs and userSubject.teachingType.name() == 'LAB'}">
                     <td th:text="${userSubject.subject.subjectCode}"></td>
                     <td>
-                        <!-- Include userSubject.id in the name attribute -->
                         <input type="number" th:name="'minLab[' + ${userSubject.id} + ']'" th:value="${userSubject.minLab}" class="form-control" min="0" />
                     </td>
                     <td>
-                        <!-- Include userSubject.id in the name attribute -->
                         <input type="number" th:name="'maxLab[' + ${userSubject.id} + ']'" th:value="${userSubject.maxLab}" class="form-control" min="0"/>
                     </td>
                 </tr>

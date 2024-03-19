@@ -27,7 +27,7 @@ public class Role {
         @Column(name = "name", nullable = false, length = 45, unique = true)
         private String name;
 
-        @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
+        @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
         private Set<com.example.thesisproject.datamodel.entity.User> users = new HashSet<>();
 
         @Override

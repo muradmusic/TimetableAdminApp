@@ -67,6 +67,7 @@ public class TestDataInitializer implements CommandLineRunner {
 
 
         userService.assignRoleToUser(user.getUsername(), "ROLE_ADMIN");
+        userService.assignRoleToUser(user.getUsername(), "ROLE_TEACHER");
         userService.assignRoleToUser(user1.getUsername(), "ROLE_TEACHER");
 
 //        Subject subject = new Subject("BIE-PA1", true);

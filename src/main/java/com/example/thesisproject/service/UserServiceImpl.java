@@ -10,6 +10,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,8 @@ public class UserServiceImpl implements UserService{
 
     private RoleRepository roleRepository;
 
+    private RoleService roleService;
+
     private PasswordEncoder passwordEncoder;
 
     @Bean
@@ -41,6 +44,7 @@ public class UserServiceImpl implements UserService{
         User user = userRepository.findUserByUsername(username);
         Role role = roleRepository.findByName(roleName);
         user.getRoles().add(role);
+        userRepository.save(user);
     }
 
 
@@ -60,11 +64,35 @@ public class UserServiceImpl implements UserService{
         User user1 = new User(user.getUsername(), encodedPassword);
 
 //        assignRoleToUser(user.getUsername(), "User");
+//        assignRoleToUser(user.getUsername(), "ROLE_TEACHER");
+//        roleService.createRole("ROLE_TEACHER");
         userRepository.save(user1);
     } else {
         System.out.println("User with username " + user.getUsername() + " already exists.");
     }
 }
+
+//@Override
+//public void createTeacher(User user) {
+//    User existingUser = userRepository.findUserByUsername(user.getUsername());
+//
+//    if (existingUser == null) {
+//        String encodedPassword = passwordEncoder.encode(user.getPassword());
+//        User user1 = new User(user.getUsername(), encodedPassword);
+//
+////        assignRoleToUser(user.getUsername(), "User");
+//        assignRoleToUser(user.getUsername(), "ROLE_TEACHER");
+//        userRepository.save(user1);
+//    } else {
+//        System.out.println("User with username " + user.getUsername() + " already exists.");
+//    }
+//}
+
+    @Override
+    public boolean doesCurrentUserHasRole(String roleName) {
+        return SecurityContextHolder.getContext().getAuthentication().getAuthorities()
+                .stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(roleName));
+    }
     @Autowired
     public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;

@@ -3,6 +3,7 @@ package com.example.thesisproject.datamodel.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 //import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -16,6 +17,7 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 @NoArgsConstructor
+@Getter
 public  class User {
 
     @Id

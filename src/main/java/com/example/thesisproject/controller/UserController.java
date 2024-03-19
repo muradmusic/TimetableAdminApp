@@ -124,6 +124,7 @@ public class UserController {
         }
 
         userService.createUser(user);
+        userService.assignRoleToUser(user.getUsername(), "ROLE_TEACHER");
 
         return "redirect:/users/all";
     }

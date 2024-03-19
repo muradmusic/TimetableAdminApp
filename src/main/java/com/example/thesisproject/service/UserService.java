@@ -12,7 +12,10 @@ public interface UserService {
     List<User> fetchUsers();
 
     void createUser(User user);
+//    void createTeacher(User user);
 
     void assignRoleToUser(String username, String roleName);
+
+    boolean doesCurrentUserHasRole(String roleName);
 }
 
