@@ -39,6 +39,7 @@
         <tr>
             <th>ID</th>
             <th>Username</th>
+            <th>Edit</th>
             <th>Delete</th>
         </tr>
         </thead>
@@ -49,6 +50,11 @@
             <a th:href="@{'/users/' + ${user.id}}">
                 <span th:text="${user.username}"></span>
             </a>
+            </td>
+            <td>
+                <form th:action="@{'/users/' + ${user.id} + '/edit'}" method="get">
+                    <button type="submit" class="btn btn-primary">Edit</button>
+                </form>
             </td>
             <td>
                 <form th:action="@{${user.id} + '/delete'}" method="post"

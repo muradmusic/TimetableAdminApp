@@ -5,6 +5,7 @@ import com.example.thesisproject.datamodel.entity.User;
 //import com.example.thesisproject.repository.RoleRepository;
 import com.example.thesisproject.repository.RoleRepository;
 import com.example.thesisproject.repository.UserRepository;
+import com.example.thesisproject.repository.UserSubjectRepository;
 import com.example.thesisproject.service.UserService;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
@@ -23,14 +24,30 @@ import java.util.Set;
 @Service
 @Transactional
 public class UserServiceImpl implements UserService{
+    @Override
+    public void deleteUser(Long userId) {
 
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not Found"));
+
+        userRepository.deleteRolesByUserId(userId);
+
+        userSubjectRepository.deleteByUserId(userId);
+
+        userRepository.delete(user);
+    }
+
+    @Autowired
     private  UserRepository userRepository;
 
+    @Autowired
+    private UserSubjectRepository userSubjectRepository;
 
+    @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
     private RoleService roleService;
-
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Bean
@@ -53,11 +70,6 @@ public class UserServiceImpl implements UserService{
     public void createUser(User user) {
     User existingUser = userRepository.findUserByUsername(user.getUsername());
 
-//        Role userRole = roleRepository.findByName("ROLE_USER");
-//        // Assign the "USER" role to the new user
-//        List<Role> roles = new ArrayList<>();
-//        roles.add(userRole);
-//        existingUser.setRoles(roles);
 
     if (existingUser == null) {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
@@ -71,23 +83,6 @@ public class UserServiceImpl implements UserService{
         System.out.println("User with username " + user.getUsername() + " already exists.");
     }
 }
-
-//@Override
-//public void createTeacher(User user) {
-//    User existingUser = userRepository.findUserByUsername(user.getUsername());
-//
-//    if (existingUser == null) {
-//        String encodedPassword = passwordEncoder.encode(user.getPassword());
-//        User user1 = new User(user.getUsername(), encodedPassword);
-//
-////        assignRoleToUser(user.getUsername(), "User");
-//        assignRoleToUser(user.getUsername(), "ROLE_TEACHER");
-//        userRepository.save(user1);
-//    } else {
-//        System.out.println("User with username " + user.getUsername() + " already exists.");
-//    }
-//}
-
     @Override
     public boolean doesCurrentUserHasRole(String roleName) {
         return SecurityContextHolder.getContext().getAuthentication().getAuthorities()

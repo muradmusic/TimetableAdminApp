@@ -29,6 +29,11 @@ public interface UserSubjectRepository extends JpaRepository<UserSubject, Long> 
     @Transactional
     void deleteBySubjectId(@Param("subjectId") Long subjectId);
 
+    @Query("DELETE FROM UserSubject us WHERE us.user.id = :userId")
+    @Modifying
+    @Transactional
+    void deleteByUserId(@Param("userId") Long userId);
+
     @Query("SELECT SUM(us.maxLab) FROM UserSubject us WHERE us.subject.id = :subjectId")
     Optional<Integer> sumMaxLabBySubjectId(@Param("subjectId") Long subjectId);
 

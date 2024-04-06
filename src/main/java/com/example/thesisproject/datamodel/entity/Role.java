@@ -6,6 +6,7 @@ import org.apache.catalina.User;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 
@@ -42,5 +43,18 @@ public class Role {
         }
 
 
+
+        @Override
+        public int hashCode() {
+                return Objects.hash(roleId);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+                if (this == obj) return true;
+                if (obj == null || getClass() != obj.getClass()) return false;
+                Role other = (Role) obj;
+                return Objects.equals(roleId, other.roleId);
+        }
 
 }

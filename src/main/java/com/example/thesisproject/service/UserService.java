@@ -17,5 +17,7 @@ public interface UserService {
     void assignRoleToUser(String username, String roleName);
 
     boolean doesCurrentUserHasRole(String roleName);
-}
 
+    void deleteUser(Long userId);
+
+}

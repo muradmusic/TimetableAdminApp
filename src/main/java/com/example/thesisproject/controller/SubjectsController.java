@@ -177,7 +177,7 @@ public class SubjectsController {
             throw new EntityNotFoundException("UserSubject with ID "  + userSubjectId + " not found");
         }
     }
-
+//check this functionality
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model) {
 
@@ -186,6 +186,7 @@ public class SubjectsController {
         model.addAttribute("subject", subject);
         return "subjects/editSubject";
     }
+
 
     @PostMapping("/update")
     public String updateSubject(@ModelAttribute Subject subject, RedirectAttributes redirectAttributes) {

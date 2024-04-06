@@ -3,6 +3,7 @@ package com.example.thesisproject.controller;
 import com.example.thesisproject.datamodel.entity.*;
 import com.example.thesisproject.datamodel.enums.Decision;
 import com.example.thesisproject.datamodel.enums.TeachingType;
+import com.example.thesisproject.repository.RoleRepository;
 import com.example.thesisproject.repository.SubjectRepository;
 import com.example.thesisproject.repository.UserRepository;
 import com.example.thesisproject.repository.UserSubjectRepository;
@@ -38,6 +39,8 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private RoleRepository roleRepository;
     @Autowired
     private UserSubjectRepository userSubjectRepository;
     @Autowired
@@ -129,28 +132,47 @@ public class UserController {
         return "redirect:/users/all";
     }
 
+    @GetMapping("/{id}/edit")
+    public String showEditForm(@PathVariable Long id, Model model) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+        model.addAttribute("user", user);
+        return "users/editUser";
+    }
+    @PostMapping("/edit")
+    public String editUser(@ModelAttribute User user, RedirectAttributes redirectAttributes) {
+
+        userRepository.save(user);
+        redirectAttributes.addFlashAttribute("success", "User updated successfully.");
+        return "redirect:/users/all";
+    }
 @PostMapping("/{userId}/delete")
 public String deleteUser(@PathVariable Long userId) {
 
 
-    if (userRepository.existsById(userId)) {
-
-        userRepository.deleteById(userId);
-        return "redirect:/users/all";
-
-    } else {
-        throw new EntityNotFoundException("User with ID " + userId + " not found");
-    }
+//    if (userRepository.existsById(userId)) {
+//
+//        userRepository.deleteById(userId);
+//        return "redirect:/users/all";
+//
+//    } else {
+//        throw new EntityNotFoundException("User with ID " + userId + " not found");
+//    }
+    userService.deleteUser(userId);
+    return "redirect:/users/all";
 }
 
     @PostMapping("/{userId}/deleteUserSubject")
     public String deleteUserSubject(@PathVariable Long userId,  @RequestParam Long userSubjectId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("user not found"));
 
-
+        userRepository.deleteRolesByUserId(userId);
         if (userSubjectRepository.existsById(userSubjectId)) {
 
             userSubjectRepository.deleteById(userSubjectId);
-            return "redirect:/users/{userId}";
+            System.out.println("controller invoked");
+            return "redirect:/subjects/{subjectId}";
 
         } else {
             throw new EntityNotFoundException("UserSubject with ID "  + userSubjectId + " not found");

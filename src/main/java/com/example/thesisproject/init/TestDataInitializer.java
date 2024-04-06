@@ -56,10 +56,12 @@ public class TestDataInitializer implements CommandLineRunner {
 
         User user = new User("guthondr", "pass");
         User user1 = new User("mammamur", "pass");
+        User user2 = new User("tester", "tester");
 
 
         userService.createUser(user);
         userService.createUser(user1);
+        userService.createUser(user2);
 
         roleService.createRole("ROLE_ADMIN");
         roleService.createRole("ROLE_TEACHER");
@@ -69,6 +71,8 @@ public class TestDataInitializer implements CommandLineRunner {
         userService.assignRoleToUser(user.getUsername(), "ROLE_ADMIN");
         userService.assignRoleToUser(user.getUsername(), "ROLE_TEACHER");
         userService.assignRoleToUser(user1.getUsername(), "ROLE_TEACHER");
+        userService.assignRoleToUser(user2.getUsername(), "ROLE_ADMIN");
+
 
 //        Subject subject = new Subject("BIE-PA1", true);
 //        Subject subject1 = new Subject("BIE-TJV", false);
