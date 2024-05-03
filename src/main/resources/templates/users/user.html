@@ -17,7 +17,7 @@
           <a class="nav-link" th:href="@{/users/all}">Users</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" th:href="@{/subjects/all}">Subjects</a>
+          <a class="nav-link" th:href="@{/subjects/all}">Courses</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" th:href="@{/logout}">Logout</a>
@@ -29,7 +29,7 @@
 
 <div class="container mt-4">
 
-  <h2> Registered Subjects for Teacher :</h2>
+  <h2> Registered Courses for Teacher :</h2>
   <table class="table table-bordered">
     <thead class="thead-dark">
     <tr th:each="username : ${user}">
@@ -47,7 +47,7 @@
       <table class="table table-bordered">
         <thead class="thead-dark">
         <tr>
-          <th>Subject</th>
+          <th>Course</th>
           <th>Teaching Type</th>
           <th>hasLabs</th>
           <th>Decision to Teach</th>
@@ -87,7 +87,7 @@
       <table class="table table-bordered">
         <thead class="thead-dark">
         <tr>
-          <th>Subject Code</th>
+          <th>Course Code</th>
           <th>Lecture</th>
           <th>Lab</th>
           <th>Seminar</th>
@@ -122,12 +122,12 @@
 
 
   <div th:if="${user_subjects}">
-    <h2>Lab Subjects</h2>
+    <h2>Lab Courses</h2>
     <form th:action="@{'/users/' + ${userId} + '/labs'}" method="post">
       <table class="table table-bordered">
         <thead class="thead-dark">
         <tr>
-          <th>Subject</th>
+          <th>Course</th>
           <th>Min</th>
           <th>Max</th>
         </tr>
@@ -157,9 +157,9 @@
   <h1 class="py-5">Adding New Record</h1>
   <form action="/users/{userId}" method="post" th:object="${newRecord}" th:action="@{'/users/' + ${user.id}}">
     <div class="form-group">
-      <label for="subject">Select Subject:</label>
+      <label for="subject">Select Course:</label>
       <select class="form-control" id="subjectId" name="subjectId" required>
-        <option hidden value="">Select a subject</option>
+        <option hidden value="">Select a course</option>
         <option th:each="subject : ${subjects}" th:value="${subject.id}" th:text="${subject.subjectCode}"></option>
       </select>
     </div>

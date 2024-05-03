@@ -41,10 +41,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
-
-
-
-
     @Override
     public UserDetails loadUserByUsername(String username)  {
         User user = userRepository.findUserByUsername(username);
@@ -52,16 +48,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             logger.error("User Not Found with username: {}", username);
             throw new UsernameNotFoundException("User Not Found with username: " + username);
         }
-
-        // Direct logging before getRoles()
-
-
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-//        user.getRoles().forEach(role -> {
-//            SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.getName());
-//            authorities.add(authority);
-//            logger.debug("Granted Authority: {}", authority.getAuthority());
-//        });
         List<Role> roles = roleService.getRolesByUserId(user.getId());
         roles.forEach(role -> {
             SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.getName());
@@ -79,32 +66,5 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         return userDetails;
     }
-
-
-//    @Override
-//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        User user = userRepository.findUserByUsername(username);
-//        if (user == null) throw new UsernameNotFoundException("User Not Found");
-//        Collection<GrantedAuthority> authorities = new ArrayList<>();
-//        user.getRoles().forEach(role -> {
-//            SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.getName());
-//            authorities.add(authority);
-//        });
-//        org.springframework.security.core.userdetails.User userDetails = new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
-//        return userDetails;
-//    }
-
-//@Override
-//public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//    User user = userRepository.findUserByUsername(username);
-//
-//    List<GrantedAuthority> authorities = user.getRoles().stream()
-//            .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
-//            .collect(Collectors.toList());
-//
-//    return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
-//}
-
-
 
 }

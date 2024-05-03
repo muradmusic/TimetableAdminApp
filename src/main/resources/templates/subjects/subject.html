@@ -18,7 +18,7 @@
           <a class="nav-link" th:href="@{/users/all}">Users</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" th:href="@{/subjects/all}">Subjects</a>
+          <a class="nav-link" th:href="@{/subjects/all}">Courses</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" th:href="@{/logout}">Logout</a>
@@ -45,7 +45,7 @@
     </thead>
     <tbody>
     <tr>
-      <td><strong>Subject Code:</strong> <span th:text="${subject.subjectCode}"></span></td>
+      <td><strong>Course Code:</strong> <span th:text="${subject.subjectCode}"></span></td>
     </tr>
     </tbody>
     <td  th:text="'Haslabs:' + ${subject.hasLabs}"></td>

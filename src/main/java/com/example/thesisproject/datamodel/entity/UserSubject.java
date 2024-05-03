@@ -28,32 +28,26 @@ public class UserSubject {
     @Column(name = "teaching_type")
     private TeachingType teachingType;
 
-
     @Enumerated(EnumType.STRING)
     @Column(name = "decision")
     private Decision decision;
 
     private int minLab = 0;
     private int maxLab = 0;
-//    @Enumerated(EnumType.STRING)
-//    private UserRole userRole;
 
     public UserSubject(User user, Subject subject, TeachingType teachingType) {
         this.user = user;
         this.subject = subject;
         this.teachingType = teachingType;
     }
-
-
-    @Override
-    public String toString() {
-        return "UserSubject{" +
-                "id=" + id +
-                ", user=" + user +
-                ", subject=" + subject +
-                ", teachingType='" + teachingType + '\'' +
-                '}';
-    }
-
+@Override
+public String toString() {
+    return "UserSubject{" +
+            "id=" + id +
+            ", userId=" + (user != null ? user.getId() : null) +  // only user's ID
+            ", subject=" + subject +
+            ", teachingType='" + teachingType + '\'' +
+            '}';
+}
 
 }

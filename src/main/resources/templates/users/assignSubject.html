@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Subject</title>
+    <title>Course</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
@@ -24,7 +24,7 @@
     <thead class="thead-dark">
     <tr>
         <th>ID</th>
-        <th>Subject Code</th>
+        <th>Course Code</th>
         <th>Lecture</th>
         <th>Lab</th>
         <th>Seminar</th>
@@ -53,7 +53,7 @@
 </table>
 
 <form th:action="@{/subjects/save}" method="post">
-    <label for="subjectCode">Subject Code:</label>
+    <label for="subjectCode">Course Code:</label>
     <input type="text" id="subjectCode" name="subjectCode" required/>
 
     <label for="teachingType">Teaching Type:</label>

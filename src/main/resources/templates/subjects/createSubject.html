@@ -21,7 +21,7 @@
 
     <form th:action="@{/subjects/create}" th:object="${subject}" method="post">
         <div class="form-group">
-            <label for="subjectCode">Subject Code:</label>
+            <label for="subjectCode">Course Code:</label>
             <input type="text" th:field="*{subjectCode}" class="form-control" id="subjectCode" required>
         </div>
 
@@ -35,7 +35,7 @@
             <input type="number" th:field="*{desiredLab}" class="form-control" id="desiredLab"  min="1" disabled required>
         </div>
 
-        <button type="submit" class="btn btn-primary">Create Subject</button>
+        <button type="submit" class="btn btn-primary">Create Course</button>
     </form>
 </div>
 

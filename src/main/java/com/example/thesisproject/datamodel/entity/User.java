@@ -27,8 +27,6 @@ public  class User {
     @NotBlank
     private String password;
 
-
-
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",
             joinColumns = {@JoinColumn(name = "user_id")},
@@ -44,11 +42,6 @@ public  class User {
         this.username = username;
         this.password = password;
     }
-
-//    public void assignRoleToUser(Role role) {
-//        this.roles.add(role);
-//        role.getUsers().add(this);
-//    }
 
     @Override
     public int hashCode() {

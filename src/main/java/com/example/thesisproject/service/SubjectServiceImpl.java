@@ -12,6 +12,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,11 +41,12 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Override
     public List<Subject> fetchSubjects() {
-        return subjectRepository.findAll() ;
+//        return subjectRepository.findAll() ;
+        return subjectRepository.findAll(Sort.by(Sort.Direction.ASC, "subjectCode"));
+
     }
 
     public void createSubject(Subject subject) {
-        // Check if the subject with the same code already exists
         Subject existingSubject = subjectRepository.findBySubjectCode(subject.getSubjectCode());
         if (existingSubject == null) {
             subjectRepository.save(subject);

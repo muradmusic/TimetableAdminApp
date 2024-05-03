@@ -99,7 +99,6 @@ public class UserController {
     }
 
     @GetMapping("/all")
-//    @PreAuthorize("hasRole('ADMIN')")
     public String renderUsersPage(Model model) {
 
         List<User> users = userService.fetchUsers();
@@ -140,25 +139,29 @@ public class UserController {
         model.addAttribute("user", user);
         return "users/editUser";
     }
-    @PostMapping("/edit")
-    public String editUser(@ModelAttribute User user, RedirectAttributes redirectAttributes) {
-
-        userRepository.save(user);
-        redirectAttributes.addFlashAttribute("success", "User updated successfully.");
-        return "redirect:/users/all";
+@PostMapping("/edit")
+public String editUser(@ModelAttribute User user, BindingResult result, RedirectAttributes redirectAttributes) {
+    if (!result.hasErrors()) {
+        User existingUser = userRepository.findById(user.getId()).orElse(null);
+        if (existingUser != null) {
+            existingUser.setUsername(user.getUsername());
+            existingUser.setUsername(user.getUsername());
+            if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+                existingUser.setPassword(user.getPassword());
+            }
+            userRepository.save(existingUser);
+            redirectAttributes.addFlashAttribute("success", "User updated successfully.");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "User not found.");
+        }
+    } else {
+        redirectAttributes.addFlashAttribute("error", "Error updating user.");
     }
-@PostMapping("/{userId}/delete")
+    return "redirect:/users/all";
+}
+
+    @PostMapping("/{userId}/delete")
 public String deleteUser(@PathVariable Long userId) {
-
-
-//    if (userRepository.existsById(userId)) {
-//
-//        userRepository.deleteById(userId);
-//        return "redirect:/users/all";
-//
-//    } else {
-//        throw new EntityNotFoundException("User with ID " + userId + " not found");
-//    }
     userService.deleteUser(userId);
     return "redirect:/users/all";
 }
@@ -215,7 +218,7 @@ public String updateLabs(@PathVariable Long userId,
                          RedirectAttributes redirectAttributes) {
     allParams.forEach((key, value) -> {
         if (key.startsWith("minLab[") || key.startsWith("maxLab[")) {
-            Long userSubjectId = Long.parseLong(key.replaceAll("\\D+", "")); // Extract numeric ID
+            Long userSubjectId = Long.parseLong(key.replaceAll("\\D+", ""));
             UserSubject userSubject = userSubjectRepository.findById(userSubjectId).orElseThrow();
 
             if (key.startsWith("minLab")) {

@@ -36,23 +36,13 @@ public class RoleServiceImpl implements RoleService{
         return roleRepository.save(new Role(roleName));
     }
 
-//    @Override
-//    public List<Role> retrieveRoleByUsername(String username) {
-//        User user = userRepository.findUserByUsername(username);
-//
-//
-//        return null;
-//    }
-
     @Override
     public List<Role> retrieveRoleByUsername(String username) {
         User user = userRepository.findUserByUsername(username);
         if (user != null) {
-            // If you are using FetchType.LAZY for roles, ensure this is called within a transactional context
-            // This ensures the roles are lazily loaded without issues
+
             return new ArrayList<>(user.getRoles());
         } else {
-            // Handle the case where the user does not exist or return an empty list
             return Collections.emptyList();
         }
     }
