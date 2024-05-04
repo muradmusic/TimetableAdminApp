@@ -175,7 +175,7 @@ public String deleteUser(@PathVariable Long userId) {
 
             userSubjectRepository.deleteById(userSubjectId);
             System.out.println("controller invoked");
-            return "redirect:/subjects/{subjectId}";
+            return "redirect:/users/" + userId;
 
         } else {
             throw new EntityNotFoundException("UserSubject with ID "  + userSubjectId + " not found");

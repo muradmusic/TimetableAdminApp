@@ -171,8 +171,7 @@ public class SubjectsController {
 
             userSubjectRepository.deleteById(userSubjectId);
             System.out.println("controller invoked");
-            return "redirect:/subjects/{subjectId}";
-
+            return "redirect:/subjects/" + subjectId;
         } else {
             throw new EntityNotFoundException("UserSubject with ID "  + userSubjectId + " not found");
         }
