@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Entity
-@Table(name ="user_subjects")
+@Table(name ="user_courses")
 @NoArgsConstructor
-public class UserSubject {
+public class UserCourse {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,8 +21,8 @@ public class UserSubject {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "subject_id")
-    private Subject subject;
+    @JoinColumn(name = "course_id")
+    private Course course;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "teaching_type")
@@ -35,17 +35,17 @@ public class UserSubject {
     private int minLab = 0;
     private int maxLab = 0;
 
-    public UserSubject(User user, Subject subject, TeachingType teachingType) {
+    public UserCourse(User user, Course course, TeachingType teachingType) {
         this.user = user;
-        this.subject = subject;
+        this.course = course;
         this.teachingType = teachingType;
     }
 @Override
 public String toString() {
-    return "UserSubject{" +
+    return "UserCourse{" +
             "id=" + id +
             ", userId=" + (user != null ? user.getId() : null) +  // only user's ID
-            ", subject=" + subject +
+            ", course=" + course +
             ", teachingType='" + teachingType + '\'' +
             '}';
 }

@@ -9,6 +9,10 @@ import java.util.List;
 public interface UserService {
 
 
+
+    User saveUser(User user);
+
+    User getUserById(Long id);
     List<User> fetchUsers();
 
     void createUser(User user);
@@ -19,5 +23,9 @@ public interface UserService {
     boolean doesCurrentUserHasRole(String roleName);
 
     void deleteUser(Long userId);
+
+    void deleteRolesByUserId(Long userId);
+
+
 
 }

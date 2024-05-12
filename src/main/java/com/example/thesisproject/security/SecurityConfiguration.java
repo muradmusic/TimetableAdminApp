@@ -48,7 +48,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                           .requestMatchers("/").permitAll()  // Home page accessible by anyone
                                 .requestMatchers("/users/**").hasRole("ADMIN")
-                                .requestMatchers("/subjects/**").hasRole("ADMIN")
+                                .requestMatchers("/courses/**").hasRole("ADMIN")
                                 .anyRequest().authenticated()
                 )
 

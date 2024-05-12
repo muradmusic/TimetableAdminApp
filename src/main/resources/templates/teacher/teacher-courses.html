@@ -31,7 +31,7 @@
         </thead>
     </table>
 
-    <div th:if="${user_subjects}">
+    <div th:if="${user_courses}">
         <h2>Records</h2>
         <form th:action="@{/teacher/{userId}/changeDecision(userId=${userId})}" method="post">
             <table class="table table-bordered">
@@ -43,14 +43,14 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="userSubject : ${user_subjects}">
-                    <td th:text="${userSubject.subject.subjectCode}"></td>
-                    <td th:text="${userSubject.teachingType.name()}"></td>
+                <tr th:each="userCourse : ${user_courses}">
+                    <td th:text="${userCourse.course.courseCode}"></td>
+                    <td th:text="${userCourse.teachingType.name()}"></td>
                     <td>
-                        <select th:name="|decision-${userSubject.id}|" id="|decision-${userSubject.id}|">
-                            <option value="PENDING" th:selected="${userSubject.decision == T(com.example.thesisproject.datamodel.enums.Decision).PENDING}">PENDING</option>
-                            <option value="YES" th:selected="${userSubject.decision == T(com.example.thesisproject.datamodel.enums.Decision).YES}">YES</option>
-                            <option value="NO" th:selected="${userSubject.decision == T(com.example.thesisproject.datamodel.enums.Decision).NO}">NO</option>
+                        <select th:name="|decision-${userCourse.id}|" id="|decision-${userCourse.id}|">
+                            <option value="PENDING" th:selected="${userCourse.decision == T(com.example.thesisproject.datamodel.enums.Decision).PENDING}">PENDING</option>
+                            <option value="YES" th:selected="${userCourse.decision == T(com.example.thesisproject.datamodel.enums.Decision).YES}">YES</option>
+                            <option value="NO" th:selected="${userCourse.decision == T(com.example.thesisproject.datamodel.enums.Decision).NO}">NO</option>
                         </select>
                     </td>
                 </tr>
@@ -62,25 +62,25 @@
 
 
 
-    <div th:if="${user_subjects}">
+    <div th:if="${user_courses}">
         <h2>Lab Courses</h2>
         <form th:action="@{'/teacher/' + ${userId} + '/labs'}" method="post">
             <table class="table table-bordered">
                 <thead class="thead-dark">
                 <tr>
-                    <th>Subject</th>
+                    <th>Course</th>
                     <th>Min</th>
                     <th>Max</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="userSubject : ${user_subjects}" th:if="${userSubject.subject.hasLabs and userSubject.teachingType.name() == 'LAB'}">
-                    <td th:text="${userSubject.subject.subjectCode}"></td>
+                <tr th:each="userCourse : ${user_courses}" th:if="${userCourse.course.hasLabs and userCourse.teachingType.name() == 'LAB'}">
+                    <td th:text="${userCourse.course.courseCode}"></td>
                     <td>
-                        <input type="number" th:name="'minLab[' + ${userSubject.id} + ']'" th:value="${userSubject.minLab}" class="form-control" min="0" />
+                        <input type="number" th:name="'minLab[' + ${userCourse.id} + ']'" th:value="${userCourse.minLab}" class="form-control" min="0" />
                     </td>
                     <td>
-                        <input type="number" th:name="'maxLab[' + ${userSubject.id} + ']'" th:value="${userSubject.maxLab}" class="form-control" min="0"/>
+                        <input type="number" th:name="'maxLab[' + ${userCourse.id} + ']'" th:value="${userCourse.maxLab}" class="form-control" min="0"/>
                     </td>
                 </tr>
                 </tbody>

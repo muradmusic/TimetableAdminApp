@@ -5,9 +5,8 @@ import com.example.thesisproject.datamodel.entity.User;
 //import com.example.thesisproject.repository.RoleRepository;
 import com.example.thesisproject.repository.RoleRepository;
 import com.example.thesisproject.repository.UserRepository;
-import com.example.thesisproject.repository.UserSubjectRepository;
-import com.example.thesisproject.service.UserService;
-import jakarta.annotation.PostConstruct;
+import com.example.thesisproject.repository.UserCourseRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -18,13 +17,29 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @Transactional
 public class UserServiceImpl implements UserService{
+    @Override
+    public void deleteRolesByUserId(Long userId) {
+        userRepository.deleteRolesByUserId(userId);
+    }
+
+    @Override
+    public User saveUser(User user) {
+        return userRepository.save(user);
+    }
+
+    @Override
+    public User getUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
+    }
+
+
+
     @Override
     public void deleteUser(Long userId) {
 
@@ -32,7 +47,7 @@ public class UserServiceImpl implements UserService{
 
         userRepository.deleteRolesByUserId(userId);
 
-        userSubjectRepository.deleteByUserId(userId);
+        userCourseRepository.deleteByUserId(userId);
 
         userRepository.delete(user);
     }
@@ -41,7 +56,7 @@ public class UserServiceImpl implements UserService{
     private  UserRepository userRepository;
 
     @Autowired
-    private UserSubjectRepository userSubjectRepository;
+    private UserCourseRepository userCourseRepository;
 
     @Autowired
     private RoleRepository roleRepository;

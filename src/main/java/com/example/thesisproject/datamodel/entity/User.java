@@ -16,7 +16,7 @@ import java.util.*;
 @NoArgsConstructor
 @Getter
 public  class User {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,7 +35,7 @@ public  class User {
 
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<UserSubject> userSubjects = new HashSet<>();
+    private Set<UserCourse> userCourses = new HashSet<>();
 
 
     public User(String username, String password) {

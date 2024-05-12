@@ -1,51 +1,43 @@
 package com.example.thesisproject.init;
 
-import com.example.thesisproject.datamodel.entity.Role;
-import com.example.thesisproject.datamodel.entity.Subject;
+import com.example.thesisproject.datamodel.entity.Course;
 import com.example.thesisproject.datamodel.entity.User;
-import com.example.thesisproject.datamodel.entity.UserSubject;
-import com.example.thesisproject.datamodel.enums.TeachingType;
-import com.example.thesisproject.repository.RoleRepository;
-import com.example.thesisproject.repository.SubjectRepository;
-import com.example.thesisproject.repository.UserRepository;
-import com.example.thesisproject.repository.UserSubjectRepository;
-import com.example.thesisproject.security.UserDetailsServiceImpl;
+import com.example.thesisproject.datamodel.entity.UserCourse;
+import com.example.thesisproject.repository.CourseRepository;
+import com.example.thesisproject.repository.UserCourseRepository;
 import com.example.thesisproject.service.RoleService;
-import com.example.thesisproject.service.SubjectService;
+import com.example.thesisproject.service.CourseService;
 import com.example.thesisproject.service.UserService;
-import com.example.thesisproject.service.UserSubjectService;
-import jakarta.annotation.PostConstruct;
-import jakarta.persistence.EntityNotFoundException;
+import com.example.thesisproject.service.UserCourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 
 @Component
 public class TestDataInitializer implements CommandLineRunner {
 
-    private final UserSubjectRepository userSubjectRepository;
+    private final UserCourseRepository userCourseRepository;
     private final UserService userService;
-    private final SubjectService subjectService;
+    private final CourseService courseService;
 
-    private final UserSubjectService userSubjectService;
+    private final UserCourseService userCourseService;
 
     private final RoleService roleService;
 
     @Autowired
     public TestDataInitializer(
-            UserSubjectService userSubjectService,
+            UserCourseService userCourseService,
             UserService userService,
-            SubjectService subjectService,
-            UserSubjectRepository userSubjectRepository,
+            CourseService courseService,
+            UserCourseRepository userCourseRepository,
             RoleService roleService
 
     ) {
-        this.userSubjectService = userSubjectService;
+        this.userCourseService = userCourseService;
         this.userService = userService;
-        this.subjectService = subjectService;
-        this.userSubjectRepository = userSubjectRepository;
+        this.courseService = courseService;
+        this.userCourseRepository = userCourseRepository;
         this.roleService = roleService;
     }
 
@@ -74,21 +66,21 @@ public class TestDataInitializer implements CommandLineRunner {
         userService.assignRoleToUser(user2.getUsername(), "ROLE_ADMIN");
 
 
-//        Subject subject = new Subject("BIE-PA1", true);
-//        Subject subject1 = new Subject("BIE-TJV", false);
+//        Course course = new Course("BIE-PA1", true);
+//        Course course1 = new Course("BIE-TJV", false);
 //
-//        subjectService.createSubject(subject);
-//        subjectService.createSubject(subject1);
+//        courseService.createCourse(course);
+//        courseService.createCourse(course1);
 //
-//        UserSubject lectureUserSubject = new UserSubject(user, subject, TeachingType.LECTURE);
-//        UserSubject labUserSubject = new UserSubject(user, subject, TeachingType.LAB);
-//        UserSubject lectureUserSubject1 = new UserSubject(user1, subject1, TeachingType.LECTURE);
-//        UserSubject labUserSubject1 = new UserSubject(user1, subject1, TeachingType.LAB);
+//        UserCourse lectureUserCourse = new UserCourse(user, course, TeachingType.LECTURE);
+//        UserCourse labUserCourse = new UserCourse(user, course, TeachingType.LAB);
+//        UserCourse lectureUserCourse1 = new UserCourse(user1, course1, TeachingType.LECTURE);
+//        UserCourse labUserCourse1 = new UserCourse(user1, course1, TeachingType.LAB);
 //
-//        userSubjectService.createUserSubject(lectureUserSubject);
-//        userSubjectService.createUserSubject(labUserSubject);
-//        userSubjectService.createUserSubject(lectureUserSubject1);
-//        userSubjectService.createUserSubject(labUserSubject1);
+//        userCourseService.createUserCourse(lectureUserCourse);
+//        userCourseService.createUserCourse(labUserCourse);
+//        userCourseService.createUserCourse(lectureUserCourse1);
+//        userCourseService.createUserCourse(labUserCourse1);
 
 
         }

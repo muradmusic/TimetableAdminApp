@@ -2,36 +2,33 @@ package com.example.thesisproject.datamodel.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Data
 @NoArgsConstructor
-@Table(name = "subjects")
+@Table(name = "courses")
 @Entity
-public class Subject {
+public class Course {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String subjectCode;
+    private String courseCode;
 
-    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<UserSubject> userSubjects = new HashSet<>();
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserCourse> userCourses = new HashSet<>();
 
     private boolean hasLabs;
 
     private int desiredLab;
 
     private boolean approvedAll;
-    public Subject(String subjectCode, boolean hasLabs) {
-        this.subjectCode = subjectCode;
+    public Course(String courseCode, boolean hasLabs) {
+        this.courseCode = courseCode;
         this.hasLabs = hasLabs;
     }
     public boolean hasLabs() {

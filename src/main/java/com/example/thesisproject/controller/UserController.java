@@ -4,12 +4,12 @@ import com.example.thesisproject.datamodel.entity.*;
 import com.example.thesisproject.datamodel.enums.Decision;
 import com.example.thesisproject.datamodel.enums.TeachingType;
 import com.example.thesisproject.repository.RoleRepository;
-import com.example.thesisproject.repository.SubjectRepository;
+import com.example.thesisproject.repository.CourseRepository;
 import com.example.thesisproject.repository.UserRepository;
-import com.example.thesisproject.repository.UserSubjectRepository;
-import com.example.thesisproject.service.SubjectService;
+import com.example.thesisproject.repository.UserCourseRepository;
+import com.example.thesisproject.service.CourseService;
 import com.example.thesisproject.service.UserService;
-import com.example.thesisproject.service.UserSubjectService;
+import com.example.thesisproject.service.UserCourseService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -18,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -42,17 +41,17 @@ public class UserController {
     @Autowired
     private RoleRepository roleRepository;
     @Autowired
-    private UserSubjectRepository userSubjectRepository;
+    private UserCourseRepository userCourseRepository;
     @Autowired
-    private SubjectService subjectService;
+    private CourseService courseService;
 
     @Autowired
-    private SubjectRepository subjectRepository;
+    private CourseRepository courseRepository;
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
-    private UserSubjectService userSubjectService;
+    private UserCourseService userCourseService;
 
 
     @Autowired
@@ -66,35 +65,35 @@ public class UserController {
     public String renderUserPage(@PathVariable Long userId, Model model) {
 
 
-        List<Subject> subjects = subjectService.fetchSubjects();
-        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not Found with id " + userId));
+        List<Course> courses = courseService.fetchCourses();
+        User user = userService.getUserById(userId);
 
         List<TeachingType> allTeachingTypes = Arrays.asList(TeachingType.values());
-        List<UserSubject> userSubjects = userSubjectRepository.findUserSubjectByUserId(userId);
+        List<UserCourse> userCourses = userCourseService.getUserCoursesByUserId(userId);
 
-        // Preprocessing to map each subject code to its teaching types
-        Map<String, Map<String, Boolean>> subjectsMap = new HashMap<>();
-        for (UserSubject userSubject : userSubjects) {
-            String subjectCode = userSubject.getSubject().getSubjectCode();
-            String teachingType = userSubject.getTeachingType().name();
+        // Preprocessing to map each course code to its teaching types
+        Map<String, Map<String, Boolean>> coursesMap = new HashMap<>();
+        for (UserCourse userCourse : userCourses) {
+            String courseCode = userCourse.getCourse().getCourseCode();
+            String teachingType = userCourse.getTeachingType().name();
 
-            Map<String, Boolean> teachingTypes = subjectsMap.getOrDefault(subjectCode, new HashMap<>());
+            Map<String, Boolean> teachingTypes = coursesMap.getOrDefault(courseCode, new HashMap<>());
             teachingTypes.put(teachingType, true); // Mark the teaching type as present
 
-            subjectsMap.put(subjectCode, teachingTypes);
+            coursesMap.put(courseCode, teachingTypes);
         }
 
         model.addAttribute("user", user);
         model.addAttribute("userId", userId);
-        model.addAttribute("subjects", subjects);
-        model.addAttribute("newRecord" , new UserSubject());
-        model.addAttribute("user_subjects", userSubjects );
+        model.addAttribute("courses", courses);
+        model.addAttribute("newRecord" , new UserCourse());
+        model.addAttribute("user_courses", userCourses );
         model.addAttribute("allTeachingTypes", allTeachingTypes);
-        model.addAttribute("subjectsMap", subjectsMap);
+        model.addAttribute("coursesMap", coursesMap);
 
 
-        log.info("Fetched subjects: {}", subjects);
-        log.info("Fetched user subjects: {}", userSubjects);
+        log.info("Fetched courses: {}", courses);
+        log.info("Fetched user courses: {}", userCourses);
         return "users/user";
     }
 
@@ -102,13 +101,13 @@ public class UserController {
     public String renderUsersPage(Model model) {
 
         List<User> users = userService.fetchUsers();
-        List<UserSubject> userSubjects = userSubjectService.fetchUserSubjects();
+        List<UserCourse> userCourses = userCourseService.fetchUserCourses();
         model.addAttribute("users", users);
-        model.addAttribute("user_subjects", userSubjects );
+        model.addAttribute("user_courses", userCourses );
 
 
         log.info("Fetched users: {}", users);
-        log.info("Fetched user subjects: {}", userSubjects);
+        log.info("Fetched user courses: {}", userCourses);
         return "users/all-users";
     }
 
@@ -134,22 +133,21 @@ public class UserController {
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model) {
 
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+        User user = userService.getUserById(id);
         model.addAttribute("user", user);
         return "users/editUser";
     }
 @PostMapping("/edit")
 public String editUser(@ModelAttribute User user, BindingResult result, RedirectAttributes redirectAttributes) {
     if (!result.hasErrors()) {
-        User existingUser = userRepository.findById(user.getId()).orElse(null);
+        User existingUser = userService.getUserById(user.getId());
         if (existingUser != null) {
             existingUser.setUsername(user.getUsername());
             existingUser.setUsername(user.getUsername());
             if (user.getPassword() != null && !user.getPassword().isEmpty()) {
                 existingUser.setPassword(user.getPassword());
             }
-            userRepository.save(existingUser);
+            userService.saveUser(existingUser);
             redirectAttributes.addFlashAttribute("success", "User updated successfully.");
         } else {
             redirectAttributes.addFlashAttribute("error", "User not found.");
@@ -166,48 +164,47 @@ public String deleteUser(@PathVariable Long userId) {
     return "redirect:/users/all";
 }
 
-    @PostMapping("/{userId}/deleteUserSubject")
-    public String deleteUserSubject(@PathVariable Long userId,  @RequestParam Long userSubjectId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("user not found"));
+    @PostMapping("/{userId}/deleteUserCourse")
+    public String deleteUserCourse(@PathVariable Long userId,  @RequestParam Long userCourseId) {
+        User user = userService.getUserById(userId);
 
         userRepository.deleteRolesByUserId(userId);
-        if (userSubjectRepository.existsById(userSubjectId)) {
+        if (userCourseService.existsUserCourse(userCourseId)) {
 
-            userSubjectRepository.deleteById(userSubjectId);
-            System.out.println("controller invoked");
+            userCourseService.deleteUserCourseById(userCourseId);
             return "redirect:/users/" + userId;
-
         } else {
-            throw new EntityNotFoundException("UserSubject with ID "  + userSubjectId + " not found");
+            throw new EntityNotFoundException("UserCourse with ID "  + userCourseId + " not found");
         }
     }
 
 
 
     @PostMapping("/{userId}")
-    public String addUserSubject(@PathVariable Long userId , @RequestParam Long subjectId, @RequestParam TeachingType teachingType, @ModelAttribute UserSubject userSubject, BindingResult result) {
+    public String addUserCourse(@PathVariable Long userId , @RequestParam Long courseId, @RequestParam TeachingType teachingType, @ModelAttribute UserCourse userCourse, BindingResult result) {
 
         if (result.hasErrors()) {
             System.out.println("error occurred");
         }
-        User user = userRepository.findById(userId).orElseThrow();
-        Subject subject = subjectRepository.findById(subjectId).orElseThrow();
+        User user = userService.getUserById(userId);
+        Course course = courseService.getCourseById(courseId);
 
-        boolean alreadyHasSubject = userSubjectRepository.existsByUserAndSubjectAndTeachingType(user, subject, teachingType);
+        boolean alreadyHasCourse = userCourseService.existsByUserAndCourseAndTeachingType(user, course, teachingType);
 
 
-        if (alreadyHasSubject) {
-            System.out.println("User already has this subject");
+        if (alreadyHasCourse) {
+            System.out.println("User already has this course");
             return "redirect:/users/{userId}";
         }
 
-        userSubject.setUser(user);
-        userSubject.setSubject(subject);
-        userSubject.setDecision(Decision.PENDING);
+        userCourse.setUser(user);
+        userCourse.setCourse(course);
+        userCourse.setDecision(Decision.PENDING);
 
-        userRepository.save(user);
-        subjectRepository.save(subject);
-        userSubjectRepository.save(userSubject);
+
+        userService.saveUser(user);
+        courseService.saveCourse(course);
+        userCourseService.saveUserCourse(userCourse);
 
         return "redirect:/users/{userId}";
     }
@@ -218,16 +215,15 @@ public String updateLabs(@PathVariable Long userId,
                          RedirectAttributes redirectAttributes) {
     allParams.forEach((key, value) -> {
         if (key.startsWith("minLab[") || key.startsWith("maxLab[")) {
-            Long userSubjectId = Long.parseLong(key.replaceAll("\\D+", ""));
-            UserSubject userSubject = userSubjectRepository.findById(userSubjectId).orElseThrow();
+            Long userCourseId = Long.parseLong(key.replaceAll("\\D+", ""));
+            UserCourse userCourse = userCourseService.getUserCourseById(userCourseId);
 
             if (key.startsWith("minLab")) {
-                userSubject.setMinLab(Integer.parseInt(value));
+                userCourse.setMinLab(Integer.parseInt(value));
             } else if (key.startsWith("maxLab")) {
-                userSubject.setMaxLab(Integer.parseInt(value));
+                userCourse.setMaxLab(Integer.parseInt(value));
             }
-
-            userSubjectRepository.save(userSubject);
+            userCourseService.saveUserCourse(userCourse);
         }
     });
 
@@ -240,22 +236,22 @@ public String updateLabs(@PathVariable Long userId,
         Map<String, String[]> parameters = request.getParameterMap();
         for (String key : parameters.keySet()) {
             if (key.startsWith("decision-")) {
-                Long userSubjectId = Long.parseLong(key.split("-")[1]);
+                Long userCourseId = Long.parseLong(key.split("-")[1]);
                 String decisionValue = parameters.get(key)[0];
-                UserSubject userSubject = userSubjectRepository.findById(userSubjectId).orElseThrow();
-                userSubject.setDecision(Decision.valueOf(decisionValue));
-                userSubjectRepository.save(userSubject);
+                UserCourse userCourse = userCourseService.getUserCourseById(userCourseId);
+                userCourse.setDecision(Decision.valueOf(decisionValue));
+                userCourseService.saveUserCourse(userCourse);
             }
         }
         return "redirect:/users/{userId}";
     }
 
-    @PostMapping("/saveUserSubjectChanges/{userId}")
+    @PostMapping("/saveUserCourseChanges/{userId}")
     @Transactional
-    public String saveUserSubjectChanges(@PathVariable Long userId, HttpServletRequest request) {
+    public String saveUserCourseChanges(@PathVariable Long userId, HttpServletRequest request) {
 
-        log.info("Starting processing of userSubject changes for user ID: {}", userId);
-        Map<String, UserSubject> currentSubjectsMap = new HashMap<>();
+        log.info("Starting processing of userCourse changes for user ID: {}", userId);
+        Map<String, UserCourse> currentCoursesMap = new HashMap<>();
 
 
         String[] presentTypes = request.getParameterValues("presentTypes");
@@ -267,25 +263,25 @@ public String updateLabs(@PathVariable Long userId,
         for (String type : presentTypes) {
             String[] parts = type.split("-");
             if (parts.length == 2) {
-                String subjectCode = parts[0];
+                String courseCode = parts[0];
                 TeachingType teachingType = TeachingType.valueOf(parts[1]);
-                String key = subjectCode + "-" + teachingType.name();
+                String key = courseCode + "-" + teachingType.name();
 
                 boolean isChecked = "on".equals(request.getParameter(type));
                 log.info("Processing type: {}, isChecked: {}", type, isChecked);
 
-                UserSubject existingAssociation = currentSubjectsMap.get(key);
+                UserCourse existingAssociation = currentCoursesMap.get(key);
 
                 if (isChecked) {
                     if (existingAssociation == null) {
-                        log.info("Creating new UserSubject for type: {}", type);
+                        log.info("Creating new UserCourse for type: {}", type);
                     } else {
                         log.info("Association already exists for type: {}, skipping creation.", type);
                     }
                 } else {
                     if (existingAssociation != null) {
-                        log.info("Removing UserSubject for type: {}", type);
-                        userSubjectRepository.delete(existingAssociation);
+                        log.info("Removing UserCourse for type: {}", type);
+                        userCourseService.deleteUserCourse(existingAssociation);
                     } else {
                         log.info("No existing association to remove for type: {}", type);
                     }
@@ -293,7 +289,7 @@ public String updateLabs(@PathVariable Long userId,
             }
         }
 
-        log.info("Completed processing of userSubject changes for user ID: {}", userId);
+        log.info("Completed processing of userCourse changes for user ID: {}", userId);
         return "redirect:/users/" + userId;
     }
 
