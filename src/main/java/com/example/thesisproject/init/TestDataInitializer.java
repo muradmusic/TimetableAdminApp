@@ -50,6 +50,11 @@ public class TestDataInitializer implements CommandLineRunner {
         User user1 = new User("mammamur", "pass");
         User user2 = new User("tester", "tester");
 
+        Course course = new Course("BIE-PA2", true);
+        Course course1 = new Course("BIE-AG1", true);
+
+        courseService.createCourse(course);
+        courseService.createCourse(course1);
 
         userService.createUser(user);
         userService.createUser(user1);
@@ -65,22 +70,6 @@ public class TestDataInitializer implements CommandLineRunner {
         userService.assignRoleToUser(user1.getUsername(), "ROLE_TEACHER");
         userService.assignRoleToUser(user2.getUsername(), "ROLE_ADMIN");
 
-
-//        Course course = new Course("BIE-PA1", true);
-//        Course course1 = new Course("BIE-TJV", false);
-//
-//        courseService.createCourse(course);
-//        courseService.createCourse(course1);
-//
-//        UserCourse lectureUserCourse = new UserCourse(user, course, TeachingType.LECTURE);
-//        UserCourse labUserCourse = new UserCourse(user, course, TeachingType.LAB);
-//        UserCourse lectureUserCourse1 = new UserCourse(user1, course1, TeachingType.LECTURE);
-//        UserCourse labUserCourse1 = new UserCourse(user1, course1, TeachingType.LAB);
-//
-//        userCourseService.createUserCourse(lectureUserCourse);
-//        userCourseService.createUserCourse(labUserCourse);
-//        userCourseService.createUserCourse(lectureUserCourse1);
-//        userCourseService.createUserCourse(labUserCourse1);
 
 
         }

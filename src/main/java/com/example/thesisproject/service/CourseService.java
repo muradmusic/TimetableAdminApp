@@ -7,19 +7,13 @@ import java.util.List;
 
 @Service
 public interface CourseService {
-
-    //    void initializeTestData();
-
     Course saveCourse(Course course);
-
     Course getCourseById(Long courseId);
-
-    void createCourse(Course course);
-
+    boolean createCourse(Course course);
     List<Course> fetchCourses();
-
     Course findCourseByCourseCode(String courseCode);
-
     void deleteCourse(Long courseId);
-
+    boolean updateCourse(Course course);
 }
+
+

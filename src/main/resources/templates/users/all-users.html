@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>All Users</title>
@@ -23,21 +23,22 @@
                     <a class="nav-link" th:href="@{/logout}">Logout</a>
                 </li>
             </ul>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <span sec:authentication="name"></span>
+                    </a>
+            </ul>
         </div>
     </div>
 </nav>
 
 <div class="container mt-4">
     <h2>All Users</h2>
-
     <a th:href="@{/users/create}" class="btn btn-primary mb-2">Create a new User</a>
-<!--    <a th:href="@{/users/assign}" class="btn btn-primary mb-2">Assign User to course</a>-->
-
-
     <table class="table table-bordered">
         <thead class="thead-dark">
         <tr>
-            <th>ID</th>
             <th>Username</th>
             <th>Edit</th>
             <th>Delete</th>
@@ -45,7 +46,6 @@
         </thead>
         <tbody>
         <tr th:each="user : ${users}">
-            <td th:text="${user.id}"></td>
             <td>
             <a th:href="@{'/users/' + ${user.id}}">
                 <span th:text="${user.username}"></span>
@@ -67,27 +67,27 @@
     </table>
 
     <!-- User Courses Table -->
-    <div th:if="${user_courses}">
-        <h2>User Courses</h2>
-        <table class="table table-bordered">
-            <thead class="thead-dark">
-            <tr>
-                <th>Username</th>
-                <th>Course Code</th>
-                <th>Teaching Type</th>
-                <th>Decision to Teach</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="userCourse : ${user_courses}">
-                <td th:text="${userCourse.user.username}"></td>
-                <td th:text="${userCourse.course.courseCode}"></td>
-                <td th:text="${userCourse.teachingType.name()}"></td>
-                <td>PENDING</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+<!--    <div th:if="${user_courses}">-->
+<!--        <h2>User Courses</h2>-->
+<!--        <table class="table table-bordered">-->
+<!--            <thead class="thead-dark">-->
+<!--            <tr>-->
+<!--                <th>Username</th>-->
+<!--                <th>Course Code</th>-->
+<!--                <th>Teaching Type</th>-->
+<!--                <th>Decision to Teach</th>-->
+<!--            </tr>-->
+<!--            </thead>-->
+<!--            <tbody>-->
+<!--            <tr th:each="userCourse : ${user_courses}">-->
+<!--                <td th:text="${userCourse.user.username}"></td>-->
+<!--                <td th:text="${userCourse.course.courseCode}"></td>-->
+<!--                <td th:text="${userCourse.teachingType.name()}"></td>-->
+<!--                <td>PENDING</td>-->
+<!--            </tr>-->
+<!--            </tbody>-->
+<!--        </table>-->
+<!--    </div>-->
 </div>
 
 </body>

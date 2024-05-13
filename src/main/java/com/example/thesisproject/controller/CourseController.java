@@ -4,7 +4,6 @@ import com.example.thesisproject.datamodel.entity.User;
 import com.example.thesisproject.datamodel.entity.UserCourse;
 import com.example.thesisproject.datamodel.enums.Decision;
 import com.example.thesisproject.datamodel.enums.TeachingType;
-import com.example.thesisproject.repository.CourseRepository;
 import com.example.thesisproject.service.CourseService;
 import com.example.thesisproject.service.UserService;
 import com.example.thesisproject.service.UserCourseService;
@@ -13,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.Banner;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -31,7 +31,7 @@ import java.util.Map;
 @Controller
 @RequestMapping("/courses")
 @RequiredArgsConstructor
-public class CoursesController {
+public class CourseController {
 
 
 
@@ -45,7 +45,7 @@ public class CoursesController {
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
-    public CoursesController(UserService userService, CourseService courseService, UserCourseService userCourseService) {
+    public CourseController(UserService userService, CourseService courseService, UserCourseService userCourseService) {
         this.userService = userService;
         this.courseService = courseService;
         this.userCourseService = userCourseService;
@@ -144,7 +144,11 @@ public class CoursesController {
         if (result.hasErrors()) {
             return "courses/createCourse";
         }
-        courseService.createCourse(course);
+        boolean created = courseService.createCourse(course);
+        if (!created) {
+            model.addAttribute("courseCodeExists", "Course with code " + course.getCourseCode() + " already exists.");
+            return "courses/createCourse";
+        }
         return "redirect:/courses/all";
     }
 
@@ -175,11 +179,18 @@ public class CoursesController {
     }
 
 
-    @PostMapping("/update")
-    public String updateCourse(@ModelAttribute Course course, RedirectAttributes redirectAttributes) {
+    @PostMapping("/edit")
+    public String updateCourse(@ModelAttribute Course course, BindingResult result, RedirectAttributes redirectAttributes,Model model) {
 
-        courseService.saveCourse(course);
-        redirectAttributes.addFlashAttribute("success", "Course updated successfully.");
+        if (result.hasErrors()) {
+            return "courses/editCourse";
+        }
+
+        boolean updated = courseService.updateCourse(course);
+        if (!updated) {
+            model.addAttribute("courseCodeExists", "Course code '" + course.getCourseCode() + "' already exists for another course.");
+            return "courses/editCourse";
+        }
         return "redirect:/courses/all";
     }
 
@@ -222,7 +233,7 @@ public class CoursesController {
 
 
     @PostMapping("/{courseId}")
-    public String addUserCourse(@PathVariable Long courseId , @RequestParam Long userId, @RequestParam TeachingType teachingType, @ModelAttribute UserCourse userCourse, BindingResult result, Model model) {
+    public String addUserCourse(@PathVariable Long courseId , @RequestParam Long userId, @RequestParam TeachingType teachingType, @ModelAttribute UserCourse userCourse, BindingResult result,RedirectAttributes redirectAttributes , Model model) {
 
         if (result.hasErrors()) {
             System.out.println("error occurred");
@@ -232,9 +243,12 @@ public class CoursesController {
 
         boolean alreadyHasCourse = userCourseService.existsByUserAndCourseAndTeachingType(user, course, teachingType);
 
+
         if (alreadyHasCourse) {
+            redirectAttributes.addFlashAttribute("recordExists", "User already has this course with selected teaching type.");
             System.out.println("User already has this course");
-            return "redirect:/courses/{courseId}";
+//            return "redirect:/courses/{courseId}";
+            return "redirect:/courses/" + courseId;
         }
 
         userCourse.setUser(user);

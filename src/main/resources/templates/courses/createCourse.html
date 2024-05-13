@@ -19,6 +19,7 @@
 <div class="container mt-4">
     <h2>Create a New Course</h2>
 
+    <div th:if="${courseCodeExists}" class="alert alert-warning" th:text="${courseCodeExists}"></div>
     <form th:action="@{/courses/create}" th:object="${course}" method="post">
         <div class="form-group">
             <label for="courseCode">Course Code:</label>

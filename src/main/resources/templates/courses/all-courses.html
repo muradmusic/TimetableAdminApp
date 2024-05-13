@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="UTF-8">
   <title>All Courses</title>
@@ -22,6 +22,12 @@
           <a class="nav-link" th:href="@{/logout}">Logout</a>
         </li>
       </ul>
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="#">
+            <span sec:authentication="name"></span>
+          </a>
+      </ul>
     </div>
   </div>
 </nav>
@@ -34,7 +40,6 @@
   <table class="table table-bordered">
     <thead class="thead-dark">
     <tr>
-      <th>ID</th>
       <th>Course Code</th>
       <th>Approved by All</th>
       <th>Has Labs</th>
@@ -46,16 +51,12 @@
     </thead>
     <tbody>
     <tr th:each="course : ${courses}">
-      <td th:text="${course.id}"></td>
       <td>
         <a th:href="@{'/courses/' + ${course.id}}">
           <span th:text="${course.courseCode}"></span>
         </a>
       </td>
       <td th:text="${course.approvedAll}"></td>
-<!--      <td th:text = "${approvedByAllMap}">-->
-<!--      </td>-->
-
       <td th:text ="${course.hasLabs}"></td>
       <td th:text="${course.desiredLab}"></td>
       <td th:text="${currentLabSumsMin[course.id]} + '-' + ${currentLabSumsMax[course.id]}"></td>

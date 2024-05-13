@@ -21,6 +21,14 @@ public class CourseServiceImpl implements CourseService {
 
     private UserCourseRepository userCourseRepository;
 
+    @Autowired
+    public CourseServiceImpl(CourseRepository courseRepository, UserCourseRepository userCourseRepository) {
+        this.courseRepository= courseRepository;
+        this.userCourseRepository = userCourseRepository;
+
+    }
+
+
     @Override
     public Course saveCourse(Course course) {
         return courseRepository.save(course);
@@ -34,15 +42,9 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Course findCourseByCourseCode(String courseCode) {
-        return findCourseByCourseCode(courseCode);
+        return courseRepository.findByCourseCode(courseCode);
     }
 
-    @Autowired
-    public CourseServiceImpl(CourseRepository courseRepository, UserCourseRepository userCourseRepository) {
-        this.courseRepository= courseRepository;
-        this.userCourseRepository = userCourseRepository;
-
-    }
 
     @Override
     public List<Course> fetchCourses() {
@@ -51,14 +53,17 @@ public class CourseServiceImpl implements CourseService {
 
     }
 
-    public void createCourse(Course course) {
+    public boolean createCourse(Course course) {
         Course existingCourse = courseRepository.findByCourseCode(course.getCourseCode());
         if (existingCourse == null) {
             courseRepository.save(course);
+            return true;
         } else {
             System.out.println("Course with code " + course.getCourseCode() + " already exists.");
+            return false;
         }
     }
+
     public void deleteCourse(Long courseId) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new EntityNotFoundException("Course with ID " + courseId + " not found"));
@@ -67,5 +72,18 @@ public class CourseServiceImpl implements CourseService {
 
         courseRepository.delete(course);
     }
+    public boolean updateCourse(Course course) {
+        Course existingCourse = courseRepository.findByCourseCode(course.getCourseCode());
+        if (existingCourse != null && !existingCourse.getId().equals(course.getId())) {
+            return false; // Course code already exists for a different course
+        }
+        courseRepository.save(course);
+        return true;
+    }
+
+
+
+
+
 
 }

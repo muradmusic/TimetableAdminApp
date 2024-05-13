@@ -27,6 +27,9 @@ public interface UserCourseService {
     void createUserCourse(UserCourse userCourse);
     void updateLabValuesForSuitableCourses(List<UserCourse> userCourses, int minLab, int maxLab);
     boolean existsByUserAndCourseAndTeachingType(User user, Course course, TeachingType teachingType);
-}
+
+    UserCourse findByCourseCodeAndUserIdAndTeachingType(String courseCode, Long userId, TeachingType teachingType);
+
+    }
 
 

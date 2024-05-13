@@ -9,15 +9,13 @@ import java.util.List;
 public interface UserService {
 
 
-
     User saveUser(User user);
 
     User getUserById(Long id);
+
     List<User> fetchUsers();
 
-    void createUser(User user);
-//    void createTeacher(User user);
-
+    //    void createUser(User user);
     void assignRoleToUser(String username, String roleName);
 
     boolean doesCurrentUserHasRole(String roleName);
@@ -26,6 +24,9 @@ public interface UserService {
 
     void deleteRolesByUserId(Long userId);
 
+    boolean createUser(User user);
+
+    boolean usernameExists(String username);
 
 
-}
+    }

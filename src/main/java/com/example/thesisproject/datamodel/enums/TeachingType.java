@@ -19,4 +19,12 @@ public enum TeachingType {
                 "type='" + type + '\'' +
                 '}';
     }
+    public static TeachingType fromString(String text) {
+        for (TeachingType b : TeachingType.values()) {
+            if (b.type.equalsIgnoreCase(text)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("No constant with text " + text + " found");
+    }
 }

@@ -41,4 +41,7 @@ public interface UserCourseRepository extends JpaRepository<UserCourse, Long> {
     @Query("SELECT SUM(us.minLab) FROM UserCourse us WHERE us.course.id = :courseId")
     Optional<Integer> sumMinLabByCourseId(@Param("courseId") Long courseId);
 
+    UserCourse findByCourse_CourseCodeAndUser_IdAndTeachingType(String courseCode, Long userId, TeachingType teachingType);
+
+
 }

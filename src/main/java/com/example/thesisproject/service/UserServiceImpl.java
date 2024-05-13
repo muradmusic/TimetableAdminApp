@@ -80,25 +80,19 @@ public class UserServiceImpl implements UserService{
         userRepository.save(user);
     }
 
-
-
     @Override
-    public void createUser(User user) {
-    User existingUser = userRepository.findUserByUsername(user.getUsername());
-
-
-    if (existingUser == null) {
-        String encodedPassword = passwordEncoder.encode(user.getPassword());
-        User user1 = new User(user.getUsername(), encodedPassword);
-
-//        assignRoleToUser(user.getUsername(), "User");
-//        assignRoleToUser(user.getUsername(), "ROLE_TEACHER");
-//        roleService.createRole("ROLE_TEACHER");
-        userRepository.save(user1);
-    } else {
-        System.out.println("User with username " + user.getUsername() + " already exists.");
+    public boolean createUser(User user) {
+        User existingUser = userRepository.findUserByUsername(user.getUsername());
+        if (existingUser != null) {
+            return false;  // Username already exists
+        } else {
+            String encodedPassword = passwordEncoder.encode(user.getPassword());
+            User newUser = new User(user.getUsername(), encodedPassword);
+            userRepository.save(newUser);
+            return true;
+        }
     }
-}
+
     @Override
     public boolean doesCurrentUserHasRole(String roleName) {
         return SecurityContextHolder.getContext().getAuthentication().getAuthorities()
@@ -118,6 +112,13 @@ public class UserServiceImpl implements UserService{
         return userRepository.findAll(Sort.by(Sort.Direction.ASC, "username"));
 
     }
+
+    public boolean usernameExists(String username) {
+        User user = userRepository.findUserByUsername(username);
+        return user != null;
+    }
+
+
 
 
 }

@@ -9,7 +9,9 @@
 
 <div class="container mt-4">
     <h2>Edit Course</h2>
-    <form th:action="@{/courses/update}" th:object="${course}" method="post">
+    <div th:if="${courseCodeExists}" class="alert alert-warning" th:text="${courseCodeExists}"></div>
+
+    <form th:action="@{/courses/edit}" th:object="${course}" method="post">
         <input type="hidden" th:field="*{id}" />
         <div class="form-group">
             <label for="courseCode">Course Code:</label>

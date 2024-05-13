@@ -121,4 +121,8 @@ public class UserCourseServiceImpl implements UserCourseService {
         }
     }
 
+    public UserCourse findByCourseCodeAndUserIdAndTeachingType(String courseCode, Long userId, TeachingType teachingType) {
+        return userCourseRepository.findByCourse_CourseCodeAndUser_IdAndTeachingType(courseCode, userId, teachingType);
+    }
+
 }

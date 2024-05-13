@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Course</title>
@@ -15,6 +15,12 @@
             <li class="nav-item">
                 <a class="nav-link" th:href="@{/logout}">Logout</a>
             </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <span sec:authentication="name"></span>
+                    </a>
             </ul>
         </div>
     </div>

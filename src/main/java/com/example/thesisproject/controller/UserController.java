@@ -65,11 +65,20 @@ public class UserController {
     public String renderUserPage(@PathVariable Long userId, Model model) {
 
 
+
         List<Course> courses = courseService.fetchCourses();
         User user = userService.getUserById(userId);
 
         List<TeachingType> allTeachingTypes = Arrays.asList(TeachingType.values());
         List<UserCourse> userCourses = userCourseService.getUserCoursesByUserId(userId);
+
+        for (UserCourse userCourse : userCourses) {
+            if (userCourse.getCourse() == null) {
+                log.error("No course associated with UserCourse ID: {}", userCourse.getId());
+                continue;
+            }
+            log.info("Course code: {}", userCourse.getCourse().getCourseCode());
+        }
 
         // Preprocessing to map each course code to its teaching types
         Map<String, Map<String, Boolean>> coursesMap = new HashMap<>();
@@ -117,18 +126,34 @@ public class UserController {
         return "users/createUser";
     }
 
-
     @PostMapping("/create")
     public String createUser(@ModelAttribute("user") @Valid User user, BindingResult result, Model model) {
         if (result.hasErrors()) {
             return "users/createUser";
         }
 
-        userService.createUser(user);
-        userService.assignRoleToUser(user.getUsername(), "ROLE_TEACHER");
+        boolean created = userService.createUser(user);
+        if (!created) {
+            model.addAttribute("usernameExists", "User with username " + user.getUsername() + " already exists.");
+            return "users/createUser";
+        }
 
+        userService.assignRoleToUser(user.getUsername(), "ROLE_TEACHER");
         return "redirect:/users/all";
     }
+
+
+//    @PostMapping("/create")
+//    public String createUser(@ModelAttribute("user") @Valid User user, BindingResult result, Model model) {
+//        if (result.hasErrors()) {
+//            return "users/createUser";
+//        }
+//
+//        userService.createUser(user);
+//        userService.assignRoleToUser(user.getUsername(), "ROLE_TEACHER");
+//
+//        return "redirect:/users/all";
+//    }
 
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model) {
@@ -138,9 +163,15 @@ public class UserController {
         return "users/editUser";
     }
 @PostMapping("/edit")
-public String editUser(@ModelAttribute User user, BindingResult result, RedirectAttributes redirectAttributes) {
+public String editUser(@ModelAttribute User user, BindingResult result, RedirectAttributes redirectAttributes,Model model) {
+
     if (!result.hasErrors()) {
         User existingUser = userService.getUserById(user.getId());
+        if (!existingUser.getUsername().equals(user.getUsername()) && userService.usernameExists(user.getUsername())) {
+            model.addAttribute("usernameExists", "Username '" + user.getUsername() + "' already exists.");
+            model.addAttribute("user", existingUser);
+            return "users/editUser";
+        }
         if (existingUser != null) {
             existingUser.setUsername(user.getUsername());
             existingUser.setUsername(user.getUsername());
@@ -246,51 +277,98 @@ public String updateLabs(@PathVariable Long userId,
         return "redirect:/users/{userId}";
     }
 
-    @PostMapping("/saveUserCourseChanges/{userId}")
-    @Transactional
-    public String saveUserCourseChanges(@PathVariable Long userId, HttpServletRequest request) {
+//    @PostMapping("/saveUserCourseChanges/{userId}")
+//    @Transactional
+//    public String saveUserCourseChanges(@PathVariable Long userId, HttpServletRequest request) {
+//
+//        log.info("Starting processing of userCourse changes for user ID: {}", userId);
+//        Map<String, UserCourse> currentCoursesMap = new HashMap<>();
+//
+//
+//        String[] presentTypes = request.getParameterValues("presentTypes");
+//        if (presentTypes == null) {
+//            log.warn("No presentTypes found in the request.");
+//            return "redirect:/users/" + userId;
+//        }
+//
+//        for (String type : presentTypes) {
+//            String[] parts = type.split("-");
+//            if (parts.length == 2) {
+//                String courseCode = parts[0];
+//                TeachingType teachingType = TeachingType.valueOf(parts[1]);
+//                String key = courseCode + "-" + teachingType.name();
+//
+//                boolean isChecked = "on".equals(request.getParameter(type));
+//                log.info("Processing type: {}, isChecked: {}", type, isChecked);
+//
+//                UserCourse existingAssociation = currentCoursesMap.get(key);
+//
+//                if (isChecked) {
+//                    if (existingAssociation == null) {
+//                        log.info("Creating new UserCourse for type: {}", type);
+//                    } else {
+//                        log.info("Association already exists for type: {}, skipping creation.", type);
+//                    }
+//                } else {
+//                    if (existingAssociation != null) {
+//                        log.info("Removing UserCourse for type: {}", type);
+//                        userCourseService.deleteUserCourse(existingAssociation);
+//                    } else {
+//                        log.info("No existing association to remove for type: {}", type);
+//                    }
+//                }
+//            }
+//        }
+//
+//        log.info("Completed processing of userCourse changes for user ID: {}", userId);
+//        return "redirect:/users/" + userId;
+//    }
+@PostMapping("/saveUserCourseChanges/{userId}")
+public String updateCourses(@PathVariable Long userId, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+    Map<String, String[]> parameters = request.getParameterMap();
+    List<UserCourse> currentCourses = userCourseService.getUserCoursesByUserId(userId);
 
-        log.info("Starting processing of userCourse changes for user ID: {}", userId);
-        Map<String, UserCourse> currentCoursesMap = new HashMap<>();
+    // Process each parameter to determine if it represents a course selection
+    for (String key : parameters.keySet()) {
+        if (key.startsWith("course-")) {
+            String[] parts = key.split("-");
+            if (parts.length < 3) continue;
 
+            String courseCode = parts[1];
+            TeachingType teachingType = TeachingType.valueOf(parts[2]);
+            boolean isChecked = Arrays.asList(parameters.get(key)).contains("on");
 
-        String[] presentTypes = request.getParameterValues("presentTypes");
-        if (presentTypes == null) {
-            log.warn("No presentTypes found in the request.");
-            return "redirect:/users/" + userId;
-        }
+            Course course = courseService.findCourseByCourseCode(courseCode);
+            if (course == null) {
+                log.error("No course found with code {}", courseCode);
+                continue;
+            }
+            log.info("------------------------");
+            System.out.println("sdfsfsdfsdfdsfsdfsd");
+            // Find existing UserCourse or create a new one
+            Optional<UserCourse> maybeUserCourse = currentCourses.stream()
+                    .filter(uc -> uc.getCourse().getCourseCode().equals(courseCode) && uc.getTeachingType().equals(teachingType))
+                    .findFirst();
 
-        for (String type : presentTypes) {
-            String[] parts = type.split("-");
-            if (parts.length == 2) {
-                String courseCode = parts[0];
-                TeachingType teachingType = TeachingType.valueOf(parts[1]);
-                String key = courseCode + "-" + teachingType.name();
-
-                boolean isChecked = "on".equals(request.getParameter(type));
-                log.info("Processing type: {}, isChecked: {}", type, isChecked);
-
-                UserCourse existingAssociation = currentCoursesMap.get(key);
-
-                if (isChecked) {
-                    if (existingAssociation == null) {
-                        log.info("Creating new UserCourse for type: {}", type);
-                    } else {
-                        log.info("Association already exists for type: {}, skipping creation.", type);
-                    }
-                } else {
-                    if (existingAssociation != null) {
-                        log.info("Removing UserCourse for type: {}", type);
-                        userCourseService.deleteUserCourse(existingAssociation);
-                    } else {
-                        log.info("No existing association to remove for type: {}", type);
-                    }
-                }
+            if (isChecked && maybeUserCourse.isEmpty()) {
+                // Create new UserCourse
+                UserCourse newUserCourse = new UserCourse(userService.getUserById(userId), course, teachingType);
+                userCourseService.saveUserCourse(newUserCourse);
+                log.info("Added new UserCourse for userId={}, courseCode={}, type={}", userId, courseCode, teachingType);
+                redirectAttributes.addFlashAttribute("success", "Added " + teachingType + " for " + courseCode);
+            } else if (!isChecked && maybeUserCourse.isPresent()) {
+                // Delete existing UserCourse
+                userCourseService.deleteUserCourse(maybeUserCourse.get());
+                log.info("Removed UserCourse for userId={}, courseCode={}, type={}", userId, courseCode, teachingType);
+                redirectAttributes.addFlashAttribute("info", "Removed " + teachingType + " for " + courseCode);
             }
         }
-
-        log.info("Completed processing of userCourse changes for user ID: {}", userId);
-        return "redirect:/users/" + userId;
     }
+
+    return "redirect:/users/" + userId;
+}
+
+
+
 
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="UTF-8">
   <title>Course</title>
@@ -24,22 +24,18 @@
           <a class="nav-link" th:href="@{/logout}">Logout</a>
         </li>
       </ul>
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="#">
+            <span sec:authentication="name"></span>
+          </a>
+      </ul>
     </div>
   </div>
 </nav>
 
 
 <div class="container mt-4">
-
-<!--  <h2>Teachers Registered for Course:</h2>-->
-<!--  <table class="table table-bordered">-->
-<!--    <thead class="thead-dark">-->
-<!--    <tr th:each="courseCode : ${course}">-->
-<!--      <th th:text="${courseCode.courseCode}"></th>-->
-<!--    </tr>-->
-<!--    </thead>-->
-<!--  </table>-->
-  <!--  <h2> <span th:text="${course.courseCode}"></span></h2>-->
   <table class="table table-bordered">
     <thead class="thead-dark">
     </thead>
@@ -59,7 +55,7 @@
         <thead class="thead-dark">
         <tr>
           <th>User</th>
-          <th>Teaching Type</th>
+          <th>Parallel Type</th>
           <th>Decision to Teach</th>
           <th>Delete</th>
         </tr>
@@ -156,6 +152,7 @@
           <td>
             <input type="number" th:name="'maxLab[' + ${userCourse.id} + ']'" th:value="${userCourse.maxLab}" class="form-control" min="0"/>
           </td>
+
         </tr>
         </tbody>
       </table>
@@ -166,6 +163,8 @@
 
 
   <h1 class="py-5">Adding New Record</h1>
+  <div th:if="${recordExists}" class="alert alert-warning" th:text="${recordExists}"></div>
+
   <form action="/courses/{courseId}" method="post" th:object="${newRecord}" th:action="@{'/courses/' + ${course.id}}">
     <div class="form-group">
       <label for="user">Select User:</label>
@@ -175,9 +174,9 @@
       </select>
     </div>
     <div class="form-group">
-      <label for="teachingType">Teaching Type:</label>
+      <label for="teachingType">Parallel Type:</label>
       <select class="form-control" id="teachingType" name="teachingType" required>
-        <option hidden value="">Select a teaching type</option>
+        <option hidden value="">Select a parallel type</option>
         <option th:each="teachingType : ${allTeachingTypes}" th:value="${teachingType.name()}" th:text="${teachingType.name()}"></option>
       </select>
     </div>
@@ -213,6 +212,11 @@
     }
   }
 </script>
+
+
+
+
+
 
 
 </body>

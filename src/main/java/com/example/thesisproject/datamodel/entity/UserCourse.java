@@ -20,8 +20,8 @@ public class UserCourse {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "course_id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 
     @Enumerated(EnumType.STRING)
