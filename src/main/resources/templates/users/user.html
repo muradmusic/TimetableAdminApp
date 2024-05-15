@@ -46,7 +46,6 @@
 
 
 
-
   <div th:if="${user_courses}">
     <h2>Records</h2>
     <form th:action="@{/users/{userId}/changeDecision(userId=${userId})}" method="post">
@@ -87,45 +86,6 @@
     </form>
   </div>
 
-
-<!--  <table class="table table-bordered">-->
-<!--    <form th:action="@{'/users/saveUserCourseChanges/' + ${user.id}}" method="post">-->
-<!--      <table class="table table-bordered">-->
-<!--        <thead class="thead-dark">-->
-<!--        <tr>-->
-<!--          <th>Course Code</th>-->
-<!--          <th>Lecture</th>-->
-<!--          <th>Lab</th>-->
-<!--          <th>Seminar</th>-->
-<!--        </tr>-->
-<!--        </thead>-->
-<!--        <tbody>-->
-<!--        <tr th:each="courseEntry : ${coursesMap.entrySet()}">-->
-<!--          <td th:text="${courseEntry.key}"></td> &lt;!&ndash; Course Code &ndash;&gt;-->
-<!--          <td>-->
-<!--            <input type="checkbox" th:name="|${courseEntry.key}-LECTURE|" th:checked="${courseEntry.value['LECTURE'] != null and courseEntry.value['LECTURE']}" />-->
-<!--          </td>-->
-<!--          <td>-->
-<!--            <input type="checkbox" th:name="|${courseEntry.key}-LAB|" th:checked="${courseEntry.value['LAB'] != null and courseEntry.value['LAB']}" />-->
-<!--          </td>-->
-<!--          <td>-->
-<!--            <input type="checkbox" th:name="|${courseEntry.key}-SEMINAR|" th:checked="${courseEntry.value['SEMINAR'] != null and courseEntry.value['SEMINAR']}" />-->
-<!--          </td>-->
-<!--        </tr>-->
-<!--        </tbody>-->
-<!--      </table>-->
-<!--      &lt;!&ndash; Place hidden inputs here to keep them out of the main table structure &ndash;&gt;-->
-<!--      <div style="display: none;">-->
-<!--        <div th:each="courseEntry : ${coursesMap.entrySet()}">-->
-<!--          <input type="hidden" th:name="'presentTypes'" th:value="|${courseEntry.key}-LECTURE|" />-->
-<!--          <input type="hidden" th:name="'presentTypes'" th:value="|${courseEntry.key}-LAB|" />-->
-<!--          <input type="hidden" th:name="'presentTypes'" th:value="|${courseEntry.key}-SEMINAR|" />-->
-<!--        </div>-->
-<!--      </div>-->
-<!--      <button type="submit" class="btn btn-primary">Save Changes</button>-->
-<!--    </form>-->
-<!--</table>-->
-
   <form th:action="@{'/users/saveUserCourseChanges/' + ${user.id}}" method="post">
     <table class="table table-bordered">
       <thead class="thead-dark">
@@ -138,17 +98,14 @@
       </thead>
       <tbody>
       <tr th:each="courseEntry : ${coursesMap.entrySet()}">
-        <td th:text="${courseEntry.key}"></td> <!-- Display the course code -->
+        <td th:text="${courseEntry.key}"></td>
         <td>
-          <!-- Lecture Checkbox -->
           <input type="checkbox" th:name="|${courseEntry.key}-LECTURE|" th:checked="${courseEntry.value['LECTURE']}" />
         </td>
         <td>
-          <!-- Lab Checkbox -->
           <input type="checkbox" th:name="|${courseEntry.key}-LAB|" th:checked="${courseEntry.value['LAB']}" />
         </td>
         <td>
-          <!-- Seminar Checkbox -->
           <input type="checkbox" th:name="|${courseEntry.key}-SEMINAR|" th:checked="${courseEntry.value['SEMINAR']}" />
         </td>
       </tr>
@@ -231,7 +188,6 @@
       })
               .then(response => {
                 if (response.ok) {
-                  // Handle successful deletion, e.g., remove the row from the table or refresh the page
                   window.location.reload();
                 } else {
                   alert('Failed to delete the record.');
@@ -241,11 +197,6 @@
     }
   }
 </script>
-
-
-
-
-
 
 
 

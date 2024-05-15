@@ -23,10 +23,7 @@ import org.slf4j.LoggerFactory;
 import com.example.thesisproject.datamodel.entity.Course;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping("/courses")
@@ -62,28 +59,30 @@ public class CourseController {
         List<UserCourse> userCourses = userCourseService.getUserCoursesByCourseId(courseId);
         List<TeachingType> allTeachingTypes = Arrays.asList(TeachingType.values());
 
-        Map<Long, Map<String, Object>> coursesMap = new HashMap<>();
-
         for (UserCourse userCourse : userCourses) {
-            Long userId = userCourse.getUser().getId();
+            if (userCourse.getCourse() == null) {
+                log.error("No course associated with UserCourse ID: {}", userCourse.getId());
+                continue;
+            }
+            log.info("Course code: {}", userCourse.getCourse().getCourseCode());
+        }
+        Map<String, Map<String, Boolean>> usersMap = new HashMap<>();
+        for (UserCourse userCourse : userCourses) {
+            String username = userCourse.getUser().getUsername();
             String teachingType = userCourse.getTeachingType().name();
 
-            Map<String, Object> userDetails = coursesMap.computeIfAbsent(userId, k -> new HashMap<>());
+            Map<String, Boolean> teachingTypes = usersMap.getOrDefault(username, new HashMap<>());
+            teachingTypes.put(teachingType, true); // Mark the teaching type as present
 
-            userDetails.put("minLab", userCourse.getMinLab());
-            userDetails.put("maxLab", userCourse.getMaxLab());
-            userDetails.put("username", userCourse.getUser().getUsername());
-
-
-            Map<String, Boolean> teachingTypes = (Map<String, Boolean>) userDetails.computeIfAbsent("teachingTypes", k -> new HashMap<>());
-            teachingTypes.put(teachingType, true);
+            usersMap.put(username, teachingTypes);
         }
+
 
         model.addAttribute("users", users);
         model.addAttribute("courseId", courseId);
         model.addAttribute("course", course);
         model.addAttribute("allTeachingTypes", allTeachingTypes);
-        model.addAttribute("coursesMap", coursesMap);
+        model.addAttribute("usersMap", usersMap);
         model.addAttribute("newRecord", new UserCourse());
         model.addAttribute("user_courses", userCourses);
 
@@ -247,14 +246,12 @@ public class CourseController {
         if (alreadyHasCourse) {
             redirectAttributes.addFlashAttribute("recordExists", "User already has this course with selected teaching type.");
             System.out.println("User already has this course");
-//            return "redirect:/courses/{courseId}";
             return "redirect:/courses/" + courseId;
         }
 
         userCourse.setUser(user);
         userCourse.setCourse(course);
         userCourse.setDecision(Decision.PENDING);
-
 
         userService.saveUser(user);
         courseService.saveCourse(course);
@@ -263,5 +260,59 @@ public class CourseController {
         return "redirect:/courses/{courseId}";
     }
 
+    @PostMapping("/saveUserCourseChanges/{courseId}")
+    public String updateCourses(@PathVariable Long courseId, HttpServletRequest request, RedirectAttributes redirectAttributes) throws Exception {
+        Map<String, String[]> parameters = request.getParameterMap();
+
+        List<UserCourse> userCourses = userCourseService.getUserCoursesByCourseId(courseId);
+
+        for (UserCourse userCourse : userCourses) {
+            String key = userCourse.getUser().getUsername() + "-" + userCourse.getTeachingType().name();
+            if (!parameters.containsKey(key)) {
+                System.out.println(key);
+                userCourseService.deleteUserCourse(userCourse);
+            }
+        }
+
+        for (String key : parameters.keySet()) {
+            String[] parts = key.split("-");
+            String username;
+            String courseType;
+
+            if (parts.length == 2) {
+                username = parts[0];
+                courseType = parts[1];
+            } else {
+                username = parts[0] + '-' + parts[1];
+                courseType = parts[2];
+                System.out.println(username);
+
+            }
+            Optional<UserCourse> userCourse = userCourses.stream().filter(
+                    c -> c.getUser().getUsername().equals(username)
+                            && c.getTeachingType().name().equals(courseType)
+            ).findFirst();
+            if (userCourse.isPresent()) {
+                continue;
+            }
+            if (parameters.get(key)[0].equals("on")) {
+                User user = userService.findUserByUsername(username);
+                if (user == null) {
+                    throw new Exception("User not found: " + username);
+                }
+
+                UserCourse newUserCourse = new UserCourse();
+                newUserCourse.setUser(user);
+                newUserCourse.setTeachingType(TeachingType.valueOf(courseType));
+                newUserCourse.setCourse(courseService.getCourseById(courseId));
+                newUserCourse.setDecision(Decision.PENDING);
+                newUserCourse.setMinLab(0);
+                newUserCourse.setMaxLab(0);
+                userCourseService.saveUserCourse(newUserCourse);
+            }
+        }
+
+        return "redirect:/courses/" + courseId;
+    }
 
 }

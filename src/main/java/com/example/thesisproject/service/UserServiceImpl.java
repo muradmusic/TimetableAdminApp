@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -60,9 +61,6 @@ public class UserServiceImpl implements UserService{
 
     @Autowired
     private RoleRepository roleRepository;
-
-    @Autowired
-    private RoleService roleService;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -108,7 +106,6 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public List<User> fetchUsers() {
-//        return userRepository.findAll();
         return userRepository.findAll(Sort.by(Sort.Direction.ASC, "username"));
 
     }
@@ -116,6 +113,10 @@ public class UserServiceImpl implements UserService{
     public boolean usernameExists(String username) {
         User user = userRepository.findUserByUsername(username);
         return user != null;
+    }
+
+    public User findUserByUsername(String username) {
+        return userRepository.findUserByUsername(username);
     }
 
 

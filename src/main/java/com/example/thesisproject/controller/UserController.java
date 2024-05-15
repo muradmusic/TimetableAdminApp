@@ -277,93 +277,55 @@ public String updateLabs(@PathVariable Long userId,
         return "redirect:/users/{userId}";
     }
 
-//    @PostMapping("/saveUserCourseChanges/{userId}")
-//    @Transactional
-//    public String saveUserCourseChanges(@PathVariable Long userId, HttpServletRequest request) {
-//
-//        log.info("Starting processing of userCourse changes for user ID: {}", userId);
-//        Map<String, UserCourse> currentCoursesMap = new HashMap<>();
-//
-//
-//        String[] presentTypes = request.getParameterValues("presentTypes");
-//        if (presentTypes == null) {
-//            log.warn("No presentTypes found in the request.");
-//            return "redirect:/users/" + userId;
-//        }
-//
-//        for (String type : presentTypes) {
-//            String[] parts = type.split("-");
-//            if (parts.length == 2) {
-//                String courseCode = parts[0];
-//                TeachingType teachingType = TeachingType.valueOf(parts[1]);
-//                String key = courseCode + "-" + teachingType.name();
-//
-//                boolean isChecked = "on".equals(request.getParameter(type));
-//                log.info("Processing type: {}, isChecked: {}", type, isChecked);
-//
-//                UserCourse existingAssociation = currentCoursesMap.get(key);
-//
-//                if (isChecked) {
-//                    if (existingAssociation == null) {
-//                        log.info("Creating new UserCourse for type: {}", type);
-//                    } else {
-//                        log.info("Association already exists for type: {}, skipping creation.", type);
-//                    }
-//                } else {
-//                    if (existingAssociation != null) {
-//                        log.info("Removing UserCourse for type: {}", type);
-//                        userCourseService.deleteUserCourse(existingAssociation);
-//                    } else {
-//                        log.info("No existing association to remove for type: {}", type);
-//                    }
-//                }
-//            }
-//        }
-//
-//        log.info("Completed processing of userCourse changes for user ID: {}", userId);
-//        return "redirect:/users/" + userId;
-//    }
+
 @PostMapping("/saveUserCourseChanges/{userId}")
-public String updateCourses(@PathVariable Long userId, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+public String updateCourses(@PathVariable Long userId, HttpServletRequest request, RedirectAttributes redirectAttributes) throws Exception {
     Map<String, String[]> parameters = request.getParameterMap();
-    List<UserCourse> currentCourses = userCourseService.getUserCoursesByUserId(userId);
 
-    // Process each parameter to determine if it represents a course selection
-    for (String key : parameters.keySet()) {
-        if (key.startsWith("course-")) {
-            String[] parts = key.split("-");
-            if (parts.length < 3) continue;
+    List<UserCourse> userCourses = userCourseService.getUserCoursesByUserId(userId);
 
-            String courseCode = parts[1];
-            TeachingType teachingType = TeachingType.valueOf(parts[2]);
-            boolean isChecked = Arrays.asList(parameters.get(key)).contains("on");
-
-            Course course = courseService.findCourseByCourseCode(courseCode);
-            if (course == null) {
-                log.error("No course found with code {}", courseCode);
-                continue;
-            }
-            log.info("------------------------");
-            System.out.println("sdfsfsdfsdfdsfsdfsd");
-            // Find existing UserCourse or create a new one
-            Optional<UserCourse> maybeUserCourse = currentCourses.stream()
-                    .filter(uc -> uc.getCourse().getCourseCode().equals(courseCode) && uc.getTeachingType().equals(teachingType))
-                    .findFirst();
-
-            if (isChecked && maybeUserCourse.isEmpty()) {
-                // Create new UserCourse
-                UserCourse newUserCourse = new UserCourse(userService.getUserById(userId), course, teachingType);
-                userCourseService.saveUserCourse(newUserCourse);
-                log.info("Added new UserCourse for userId={}, courseCode={}, type={}", userId, courseCode, teachingType);
-                redirectAttributes.addFlashAttribute("success", "Added " + teachingType + " for " + courseCode);
-            } else if (!isChecked && maybeUserCourse.isPresent()) {
-                // Delete existing UserCourse
-                userCourseService.deleteUserCourse(maybeUserCourse.get());
-                log.info("Removed UserCourse for userId={}, courseCode={}, type={}", userId, courseCode, teachingType);
-                redirectAttributes.addFlashAttribute("info", "Removed " + teachingType + " for " + courseCode);
-            }
+    for (UserCourse userCourse1 : userCourses) {
+        String key1 = userCourse1.getCourse().getCourseCode() + "-" + userCourse1.getTeachingType().name();
+        if (!parameters.containsKey(key1)) {
+            System.out.println(key1);
+            userCourseService.deleteUserCourse(userCourse1);
         }
     }
+
+    Map<String, List<TeachingType>> courseMap = new HashMap<>();
+    for (String key : parameters.keySet()) {
+        String[] parts = key.split("-");
+        String courseCode;
+        String courseType;
+
+        if (parts.length == 2) {
+            courseCode = parts[0];
+            courseType = parts[1];
+        }else {
+            courseCode = parts[0] + '-' + parts[1];
+            courseType = parts[2];
+        }
+        Optional<UserCourse> userCourse =  userCourses.stream().filter(
+                c -> c.getCourse().getCourseCode().equals(courseCode)
+                        && c.getTeachingType().name().equals(courseType)
+        ).findFirst();
+        if (userCourse.isPresent()) {
+            continue;
+        }
+
+        if (parameters.get(key)[0].equals("on")) {
+
+            UserCourse newCourse = new UserCourse();
+            newCourse.setCourse(courseService.findCourseByCourseCode(courseCode));
+            newCourse.setTeachingType(TeachingType.valueOf(courseType));
+            newCourse.setUser(userService.getUserById(userId));
+            newCourse.setDecision(Decision.PENDING);
+            newCourse.setMinLab(0);
+            newCourse.setMaxLab(0);
+            userCourseService.saveUserCourse(newCourse);
+        }
+    }
+
 
     return "redirect:/users/" + userId;
 }

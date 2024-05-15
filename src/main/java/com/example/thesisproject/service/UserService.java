@@ -28,5 +28,7 @@ public interface UserService {
 
     boolean usernameExists(String username);
 
+    User findUserByUsername(String username);
+
 
     }
