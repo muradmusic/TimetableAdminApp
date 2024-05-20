@@ -44,32 +44,12 @@ public class SecurityConfiguration {
                                 .permitAll()
                 )
                 .csrf(AbstractHttpConfigurer::disable)
-                // Configure authorization rules
                 .authorizeHttpRequests(auth -> auth
-                          .requestMatchers("/").permitAll()  // Home page accessible by anyone
+                          .requestMatchers("/").permitAll()  
                                 .requestMatchers("/users/**").hasRole("ADMIN")
                                 .requestMatchers("/courses/**").hasRole("ADMIN")
                                 .anyRequest().authenticated()
                 )
-
-//                .formLogin(formLogin -> formLogin
-//                        .successHandler(new AuthenticationSuccessHandler() {
-//                            @Override
-//                            public void onAuthenticationSuccess(HttpServletRequest request,
-//                                                                HttpServletResponse response,
-//                                                                Authentication authentication) throws IOException {
-//                                Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
-//                                if (roles.contains("ROLE_ADMIN")) {
-//                                    response.sendRedirect("/users/all");
-//                                } else if (roles.contains("ROLE_TEACHER")) {
-//                                    response.sendRedirect("/teacher/1");
-//                                } else {
-//                                    response.sendRedirect("/");
-//                                }
-//                            }
-//                        })
-//                        .permitAll()
-//                )
                 .formLogin(formLogin -> formLogin
                         .successHandler(customLoginSuccessHandler(userRepository)))
 
@@ -78,8 +58,8 @@ public class SecurityConfiguration {
                             .accessDeniedPage("/403"))
 
             .logout(logout -> logout.permitAll()
-                    .invalidateHttpSession(true) // Invalidate session
-                    .deleteCookies("JSESSIONID")); // Delete session cookie);  // Allow everyone to logout
+                    .invalidateHttpSession(true) 
+                    .deleteCookies("JSESSIONID")); 
 
     return http.build();
 }
