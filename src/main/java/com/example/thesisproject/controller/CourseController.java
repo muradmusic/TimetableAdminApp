@@ -29,9 +29,6 @@ import java.util.*;
 @RequestMapping("/courses")
 @RequiredArgsConstructor
 public class CourseController {
-
-
-
     @Autowired
     private UserCourseService userCourseService;
     @Autowired
@@ -155,20 +152,21 @@ public class CourseController {
     @PostMapping("/{courseId}/delete")
     public String deleteCourse(@PathVariable Long courseId) {
 
-            courseService.deleteCourse(courseId);
-            return "redirect:/courses/all";
+        courseService.deleteCourse(courseId);
+        return "redirect:/courses/all";
     }
+
     @PostMapping("/{courseId}/deleteUserCourse")
-    public String deleteUserCourse(@PathVariable Long courseId,  @RequestParam Long userCourseId) {
+    public String deleteUserCourse(@PathVariable Long courseId, @RequestParam Long userCourseId) {
 
         if (userCourseService.existsUserCourse(userCourseId)) {
             userCourseService.deleteUserCourseById(userCourseId);
             return "redirect:/courses/" + courseId;
         } else {
-            throw new EntityNotFoundException("UserCourse with ID "  + userCourseId + " not found");
+            throw new EntityNotFoundException("UserCourse with ID " + userCourseId + " not found");
         }
     }
-//check this functionality
+
     @GetMapping("/{courseId}/edit")
     public String showEditForm(@PathVariable Long courseId, Model model) {
 
@@ -179,7 +177,7 @@ public class CourseController {
 
 
     @PostMapping("/edit")
-    public String updateCourse(@ModelAttribute Course course, BindingResult result, RedirectAttributes redirectAttributes,Model model) {
+    public String updateCourse(@ModelAttribute Course course, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
 
         if (result.hasErrors()) {
             return "courses/editCourse";
@@ -194,23 +192,34 @@ public class CourseController {
     }
 
     @PostMapping("/{courseId}/labs")
-    public String updateLabs(@PathVariable Long courseId,
-                             @RequestParam Map<String, String> allParams,
+    public String updateLabs(@PathVariable Long courseId, @RequestParam Map<String, String> allParams,
                              RedirectAttributes redirectAttributes) {
+
+        Map<UserCourse, List<Integer>> courseLabsMap = new HashMap<>();
         allParams.forEach((key, value) -> {
             if (key.startsWith("minLab[") || key.startsWith("maxLab[")) {
-                Long userCourseId = Long.parseLong(key.replaceAll("\\D+", "")); // Extract numeric ID
+                Long userCourseId = Long.parseLong(key.replaceAll("\\D+", ""));
                 UserCourse userCourse = userCourseService.getUserCourseById(userCourseId);
-
+                int labValue = Integer.parseInt(value);
                 if (key.startsWith("minLab")) {
-                    userCourse.setMinLab(Integer.parseInt(value));
-                } else if (key.startsWith("maxLab")) {
-                    userCourse.setMaxLab(Integer.parseInt(value));
+                    courseLabsMap.computeIfAbsent(userCourse, k -> new ArrayList<>()).add(0, labValue);
+                } else {
+                    courseLabsMap.computeIfAbsent(userCourse, k -> new ArrayList<>()).add(1, labValue);
                 }
-                userCourseService.saveUserCourse(userCourse);
             }
         });
-
+        courseLabsMap.forEach((courseCode, labs) -> {
+            System.out.println("Course Code: " + courseCode);
+            System.out.println("MinLab: " + labs.get(0));
+            System.out.println("MaxLab: " + labs.get(1));
+        });
+        courseLabsMap.forEach((userCourse, labs) -> {
+            int min = labs.get(0);
+            int max = labs.get(1);
+            userCourse.setMinLab(min);
+            userCourse.setMaxLab(Math.max(min, max));
+            userCourseService.saveUserCourse(userCourse);
+        });
         redirectAttributes.addFlashAttribute("success", "Labs updated successfully.");
         return "redirect:/courses/" + courseId;
     }
@@ -232,7 +241,7 @@ public class CourseController {
 
 
     @PostMapping("/{courseId}")
-    public String addUserCourse(@PathVariable Long courseId , @RequestParam Long userId, @RequestParam TeachingType teachingType, @ModelAttribute UserCourse userCourse, BindingResult result,RedirectAttributes redirectAttributes , Model model) {
+    public String addUserCourse(@PathVariable Long courseId, @RequestParam Long userId, @RequestParam TeachingType teachingType, @ModelAttribute UserCourse userCourse, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
 
         if (result.hasErrors()) {
             System.out.println("error occurred");

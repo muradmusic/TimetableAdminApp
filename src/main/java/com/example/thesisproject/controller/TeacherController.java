@@ -52,8 +52,6 @@ public class TeacherController {
     private UserCourseService userCourseService;
 
 
-
-
     @GetMapping("/{userId}")
     public String renderUserPage(@PathVariable Long userId, Model model) {
 
@@ -65,11 +63,10 @@ public class TeacherController {
         List<UserCourse> userCourses = userCourseRepository.findUserCourseByUserId(userId);
 
 
-
         model.addAttribute("user", user);
         model.addAttribute("courses", courses);
-        model.addAttribute("newRecord" , new UserCourse());
-        model.addAttribute("user_courses", userCourses );
+        model.addAttribute("newRecord", new UserCourse());
+        model.addAttribute("user_courses", userCourses);
         model.addAttribute("allTeachingTypes", allTeachingTypes);
 
 

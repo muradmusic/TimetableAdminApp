@@ -34,25 +34,15 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private RoleRepository roleRepository;
-    @Autowired
-    private UserCourseRepository userCourseRepository;
     @Autowired
     private CourseService courseService;
-
-    @Autowired
-    private CourseRepository courseRepository;
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private UserCourseService userCourseService;
-
 
     @Autowired
     public UserController(UserService userService) {
@@ -60,10 +50,8 @@ public class UserController {
     }
 
 
-
     @GetMapping("/{userId}")
     public String renderUserPage(@PathVariable Long userId, Model model) {
-
 
 
         List<Course> courses = courseService.fetchCourses();
@@ -95,8 +83,8 @@ public class UserController {
         model.addAttribute("user", user);
         model.addAttribute("userId", userId);
         model.addAttribute("courses", courses);
-        model.addAttribute("newRecord" , new UserCourse());
-        model.addAttribute("user_courses", userCourses );
+        model.addAttribute("newRecord", new UserCourse());
+        model.addAttribute("user_courses", userCourses);
         model.addAttribute("allTeachingTypes", allTeachingTypes);
         model.addAttribute("coursesMap", coursesMap);
 
@@ -112,7 +100,7 @@ public class UserController {
         List<User> users = userService.fetchUsers();
         List<UserCourse> userCourses = userCourseService.fetchUserCourses();
         model.addAttribute("users", users);
-        model.addAttribute("user_courses", userCourses );
+        model.addAttribute("user_courses", userCourses);
 
 
         log.info("Fetched users: {}", users);
@@ -142,19 +130,6 @@ public class UserController {
         return "redirect:/users/all";
     }
 
-
-//    @PostMapping("/create")
-//    public String createUser(@ModelAttribute("user") @Valid User user, BindingResult result, Model model) {
-//        if (result.hasErrors()) {
-//            return "users/createUser";
-//        }
-//
-//        userService.createUser(user);
-//        userService.assignRoleToUser(user.getUsername(), "ROLE_TEACHER");
-//
-//        return "redirect:/users/all";
-//    }
-
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model) {
 
@@ -162,41 +137,42 @@ public class UserController {
         model.addAttribute("user", user);
         return "users/editUser";
     }
-@PostMapping("/edit")
-public String editUser(@ModelAttribute User user, BindingResult result, RedirectAttributes redirectAttributes,Model model) {
 
-    if (!result.hasErrors()) {
-        User existingUser = userService.getUserById(user.getId());
-        if (!existingUser.getUsername().equals(user.getUsername()) && userService.usernameExists(user.getUsername())) {
-            model.addAttribute("usernameExists", "Username '" + user.getUsername() + "' already exists.");
-            model.addAttribute("user", existingUser);
-            return "users/editUser";
-        }
-        if (existingUser != null) {
-            existingUser.setUsername(user.getUsername());
-            existingUser.setUsername(user.getUsername());
-            if (user.getPassword() != null && !user.getPassword().isEmpty()) {
-                existingUser.setPassword(user.getPassword());
+    @PostMapping("/edit")
+    public String editUser(@ModelAttribute User user, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
+
+        if (!result.hasErrors()) {
+            User existingUser = userService.getUserById(user.getId());
+            if (!existingUser.getUsername().equals(user.getUsername()) && userService.usernameExists(user.getUsername())) {
+                model.addAttribute("usernameExists", "Username '" + user.getUsername() + "' already exists.");
+                model.addAttribute("user", existingUser);
+                return "users/editUser";
             }
-            userService.saveUser(existingUser);
-            redirectAttributes.addFlashAttribute("success", "User updated successfully.");
+            if (existingUser != null) {
+                existingUser.setUsername(user.getUsername());
+                existingUser.setUsername(user.getUsername());
+                if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+                    existingUser.setPassword(user.getPassword());
+                }
+                userService.saveUser(existingUser);
+                redirectAttributes.addFlashAttribute("success", "User updated successfully.");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "User not found.");
+            }
         } else {
-            redirectAttributes.addFlashAttribute("error", "User not found.");
+            redirectAttributes.addFlashAttribute("error", "Error updating user.");
         }
-    } else {
-        redirectAttributes.addFlashAttribute("error", "Error updating user.");
+        return "redirect:/users/all";
     }
-    return "redirect:/users/all";
-}
 
     @PostMapping("/{userId}/delete")
-public String deleteUser(@PathVariable Long userId) {
-    userService.deleteUser(userId);
-    return "redirect:/users/all";
-}
+    public String deleteUser(@PathVariable Long userId) {
+        userService.deleteUser(userId);
+        return "redirect:/users/all";
+    }
 
     @PostMapping("/{userId}/deleteUserCourse")
-    public String deleteUserCourse(@PathVariable Long userId,  @RequestParam Long userCourseId) {
+    public String deleteUserCourse(@PathVariable Long userId, @RequestParam Long userCourseId) {
         User user = userService.getUserById(userId);
 
         userRepository.deleteRolesByUserId(userId);
@@ -205,14 +181,13 @@ public String deleteUser(@PathVariable Long userId) {
             userCourseService.deleteUserCourseById(userCourseId);
             return "redirect:/users/" + userId;
         } else {
-            throw new EntityNotFoundException("UserCourse with ID "  + userCourseId + " not found");
+            throw new EntityNotFoundException("UserCourse with ID " + userCourseId + " not found");
         }
     }
 
 
-
     @PostMapping("/{userId}")
-    public String addUserCourse(@PathVariable Long userId , @RequestParam Long courseId, @RequestParam TeachingType teachingType, @ModelAttribute UserCourse userCourse, BindingResult result) {
+    public String addUserCourse(@PathVariable Long userId, @RequestParam Long courseId, @RequestParam TeachingType teachingType, @ModelAttribute UserCourse userCourse, BindingResult result) {
 
         if (result.hasErrors()) {
             System.out.println("error occurred");
@@ -240,30 +215,43 @@ public String deleteUser(@PathVariable Long userId) {
         return "redirect:/users/{userId}";
     }
 
-@PostMapping("/{userId}/labs")
-public String updateLabs(@PathVariable Long userId,
-                         @RequestParam Map<String, String> allParams,
-                         RedirectAttributes redirectAttributes) {
-    allParams.forEach((key, value) -> {
-        if (key.startsWith("minLab[") || key.startsWith("maxLab[")) {
-            Long userCourseId = Long.parseLong(key.replaceAll("\\D+", ""));
-            UserCourse userCourse = userCourseService.getUserCourseById(userCourseId);
 
-            if (key.startsWith("minLab")) {
-                userCourse.setMinLab(Integer.parseInt(value));
-            } else if (key.startsWith("maxLab")) {
-                userCourse.setMaxLab(Integer.parseInt(value));
+    @PostMapping("/{userId}/labs")
+    public String updateLabs(@PathVariable Long userId, @RequestParam Map<String, String> allParams,
+                             RedirectAttributes redirectAttributes) {
+
+        Map<UserCourse, List<Integer>> courseLabsMap = new HashMap<>();
+        allParams.forEach((key, value) -> {
+            if (key.startsWith("minLab[") || key.startsWith("maxLab[")) {
+                Long userCourseId = Long.parseLong(key.replaceAll("\\D+", ""));
+                UserCourse userCourse = userCourseService.getUserCourseById(userCourseId);
+                int labValue = Integer.parseInt(value);
+                if (key.startsWith("minLab")) {
+                    courseLabsMap.computeIfAbsent(userCourse, k -> new ArrayList<>()).add(0, labValue);
+                } else {
+                    courseLabsMap.computeIfAbsent(userCourse, k -> new ArrayList<>()).add(1, labValue);
+                }
             }
+        });
+        courseLabsMap.forEach((courseCode, labs) -> {
+            System.out.println("Course Code: " + courseCode);
+            System.out.println("MinLab: " + labs.get(0));
+            System.out.println("MaxLab: " + labs.get(1));
+        });
+        courseLabsMap.forEach((userCourse, labs) -> {
+            int min = labs.get(0);
+            int max = labs.get(1);
+            userCourse.setMinLab(min);
+            userCourse.setMaxLab(Math.max(min, max));
             userCourseService.saveUserCourse(userCourse);
-        }
-    });
+        });
+        redirectAttributes.addFlashAttribute("success", "Labs updated successfully.");
+        return "redirect:/users/" + userId;
+    }
 
-    redirectAttributes.addFlashAttribute("success", "Labs updated successfully.");
-    return "redirect:/users/" + userId;
-}
 
     @PostMapping("/{userId}/changeDecision")
-    public String changeDecision(@PathVariable Long userId, HttpServletRequest request) {
+    public String changeDecision(HttpServletRequest request) {
         Map<String, String[]> parameters = request.getParameterMap();
         for (String key : parameters.keySet()) {
             if (key.startsWith("decision-")) {
@@ -278,59 +266,57 @@ public String updateLabs(@PathVariable Long userId,
     }
 
 
-@PostMapping("/saveUserCourseChanges/{userId}")
-public String updateCourses(@PathVariable Long userId, HttpServletRequest request, RedirectAttributes redirectAttributes) throws Exception {
-    Map<String, String[]> parameters = request.getParameterMap();
+    @PostMapping("/saveUserCourseChanges/{userId}")
+    public String updateCourses(@PathVariable Long userId, HttpServletRequest request, RedirectAttributes redirectAttributes) throws Exception {
+        Map<String, String[]> parameters = request.getParameterMap();
 
-    List<UserCourse> userCourses = userCourseService.getUserCoursesByUserId(userId);
+        List<UserCourse> userCourses = userCourseService.getUserCoursesByUserId(userId);
 
-    for (UserCourse userCourse1 : userCourses) {
-        String key1 = userCourse1.getCourse().getCourseCode() + "-" + userCourse1.getTeachingType().name();
-        if (!parameters.containsKey(key1)) {
-            System.out.println(key1);
-            userCourseService.deleteUserCourse(userCourse1);
+        for (UserCourse userCourse1 : userCourses) {
+            String key1 = userCourse1.getCourse().getCourseCode() + "-" + userCourse1.getTeachingType().name();
+            if (!parameters.containsKey(key1)) {
+                System.out.println(key1);
+                userCourseService.deleteUserCourse(userCourse1);
+            }
         }
+
+        Map<String, List<TeachingType>> courseMap = new HashMap<>();
+        for (String key : parameters.keySet()) {
+            String[] parts = key.split("-");
+            String courseCode;
+            String courseType;
+
+            if (parts.length == 2) {
+                courseCode = parts[0];
+                courseType = parts[1];
+            } else {
+                courseCode = parts[0] + '-' + parts[1];
+                courseType = parts[2];
+            }
+            Optional<UserCourse> userCourse = userCourses.stream().filter(
+                    c -> c.getCourse().getCourseCode().equals(courseCode)
+                            && c.getTeachingType().name().equals(courseType)
+            ).findFirst();
+            if (userCourse.isPresent()) {
+                continue;
+            }
+
+            if (parameters.get(key)[0].equals("on")) {
+
+                UserCourse newCourse = new UserCourse();
+                newCourse.setCourse(courseService.findCourseByCourseCode(courseCode));
+                newCourse.setTeachingType(TeachingType.valueOf(courseType));
+                newCourse.setUser(userService.getUserById(userId));
+                newCourse.setDecision(Decision.PENDING);
+                newCourse.setMinLab(0);
+                newCourse.setMaxLab(0);
+                userCourseService.saveUserCourse(newCourse);
+            }
+        }
+
+
+        return "redirect:/users/" + userId;
     }
-
-    Map<String, List<TeachingType>> courseMap = new HashMap<>();
-    for (String key : parameters.keySet()) {
-        String[] parts = key.split("-");
-        String courseCode;
-        String courseType;
-
-        if (parts.length == 2) {
-            courseCode = parts[0];
-            courseType = parts[1];
-        }else {
-            courseCode = parts[0] + '-' + parts[1];
-            courseType = parts[2];
-        }
-        Optional<UserCourse> userCourse =  userCourses.stream().filter(
-                c -> c.getCourse().getCourseCode().equals(courseCode)
-                        && c.getTeachingType().name().equals(courseType)
-        ).findFirst();
-        if (userCourse.isPresent()) {
-            continue;
-        }
-
-        if (parameters.get(key)[0].equals("on")) {
-
-            UserCourse newCourse = new UserCourse();
-            newCourse.setCourse(courseService.findCourseByCourseCode(courseCode));
-            newCourse.setTeachingType(TeachingType.valueOf(courseType));
-            newCourse.setUser(userService.getUserById(userId));
-            newCourse.setDecision(Decision.PENDING);
-            newCourse.setMinLab(0);
-            newCourse.setMaxLab(0);
-            userCourseService.saveUserCourse(newCourse);
-        }
-    }
-
-
-    return "redirect:/users/" + userId;
-}
-
-
 
 
 }
