@@ -36,6 +36,7 @@
 
 
 <div class="container mt-4">
+
   <table class="table table-bordered">
     <thead class="thead-dark">
     </thead>
@@ -43,13 +44,54 @@
     <tr>
       <td><strong>Course Code:</strong> <span th:text="${course.courseCode}"></span></td>
     </tr>
+    <tr>
+      <td><strong>Has Labs:</strong> <span th:text="${course.hasLabs ? 'Yes' : 'No'}"></span></td>
+    </tr>
+    <tr>
+      <td>
+        <strong>Number of Lectures:</strong>
+        Required: <span th:text="${course.numLecture}"></span>,
+        Current: <span th:text="${currentLectures}"></span>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <strong>Number of Seminars:</strong>
+        Required: <span th:text="${course.numSeminar}"></span>,
+        Current: <span th:text="${currentSeminars}"></span>
+      </td>
+    </tr>
+    <tr th:if="${!course.hasLabs}">
+      <td>
+        <strong>Number of Labs:</strong>
+        Required: <span th:text="${course.numLab}"></span>,
+        Current: <span th:text="${currentLabs}"></span>
+      </td>
+    </tr>
+    <tr th:if="${course.hasLabs}">
+      <td>
+        <strong>Lab Range:</strong>
+        <span th:text="${currentLabSumsMin[course.id]}"></span> -
+        <span th:text="${currentLabSumsMax[course.id]}"></span>
+      </td>
+    </tr>
     </tbody>
-    <td  th:text="'Haslabs:' + ${course.hasLabs}"></td>
-
   </table>
+<!--  <table class="table table-bordered">-->
+<!--    <thead class="thead-dark">-->
+<!--    </thead>-->
+<!--    <tbody>-->
+<!--    <tr>-->
+<!--      <td><strong>Course Code:</strong> <span th:text="${course.courseCode}"></span></td>-->
+<!--    </tr>-->
+<!--    </tbody>-->
+<!--    <td  th:text="'Haslabs:' + ${course.hasLabs}"></td>-->
+
+
+<!--  </table>-->
 
   <div th:if="${user_courses}">
-    <h2>Records</h2>
+    <h2>Classes</h2>
     <form th:action="@{/courses/{courseId}/changeDecision(courseId=${courseId})}" method="post">
       <table class="table table-bordered">
         <thead class="thead-dark">
@@ -90,7 +132,7 @@
     </form>
   </div>
 
-
+  <h2>Updating Classes</h2>
   <form th:action="@{'/courses/saveUserCourseChanges/' + ${course.id}}" method="post">
     <table class="table table-bordered">
       <thead class="thead-dark">
@@ -121,7 +163,7 @@
 
 
   <div th:if="${user_courses}">
-    <h2>Lab Teachers</h2>
+    <h2>Lab Teachers class choice</h2>
     <form th:action="@{'/courses/' + ${courseId} + '/labs'}" method="post">
       <table class="table table-bordered">
         <thead class="thead-dark">
@@ -154,8 +196,9 @@
 
 
 
-  <h1 class="py-5">Adding New Record</h1>
-  <div th:if="${recordExists}" class="alert alert-warning" th:text="${recordExists}"></div>
+  <h1 class="py-5">Adding New Class</h1>
+<!--  <div th:if="${recordExists}" class="alert alert-warning" th:text="${recordExists}"></div>-->
+  <div th:if="${LabRecordExists}" class="alert alert-warning" th:text="${LabRecordExists}"></div>
 
   <form action="/courses/{courseId}" method="post" th:object="${newRecord}" th:action="@{'/courses/' + ${course.id}}">
     <div class="form-group">

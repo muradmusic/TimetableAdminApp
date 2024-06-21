@@ -58,7 +58,7 @@
       </td>
       <td th:text="${course.approvedAll}"></td>
       <td th:text ="${course.hasLabs}"></td>
-      <td th:text="${course.desiredLab}"></td>
+      <td th:text="${course.numLab}"></td>
       <td th:text="${currentLabSumsMin[course.id]} + '-' + ${currentLabSumsMax[course.id]}"></td>
       <td>
         <form th:action="@{'/courses/' + ${course.id} + '/edit'}" method="get">

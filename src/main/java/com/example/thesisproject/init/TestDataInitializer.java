@@ -50,8 +50,8 @@ public class TestDataInitializer implements CommandLineRunner {
         User user1 = new User("mammamur", "pass");
         User user2 = new User("tester", "tester");
 
-        Course course = new Course("BIE-PA2", true);
-        Course course1 = new Course("BIE-AG1", true);
+        Course course = new Course("BIE-PA2", true, 0, 0, 0, 0, 0 , 0);
+        Course course1 = new Course("BIE-AG1", false, 0, 0, 0, 0, 0, 0);
 
         courseService.createCourse(course);
         courseService.createCourse(course1);

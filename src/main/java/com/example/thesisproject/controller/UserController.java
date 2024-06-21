@@ -195,13 +195,13 @@ public class UserController {
         User user = userService.getUserById(userId);
         Course course = courseService.getCourseById(courseId);
 
-        boolean alreadyHasCourse = userCourseService.existsByUserAndCourseAndTeachingType(user, course, teachingType);
-
-
-        if (alreadyHasCourse) {
-            System.out.println("User already has this course");
-            return "redirect:/users/{userId}";
-        }
+//        boolean alreadyHasCourse = userCourseService.existsByUserAndCourseAndTeachingType(user, course, teachingType);
+//
+//
+//        if (alreadyHasCourse) {
+//            System.out.println("User already has this course");
+//            return "redirect:/users/{userId}";
+//        }
 
         userCourse.setUser(user);
         userCourse.setCourse(course);

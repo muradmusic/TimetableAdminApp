@@ -56,13 +56,31 @@ public class CourseController {
         List<UserCourse> userCourses = userCourseService.getUserCoursesByCourseId(courseId);
         List<TeachingType> allTeachingTypes = Arrays.asList(TeachingType.values());
 
-        for (UserCourse userCourse : userCourses) {
-            if (userCourse.getCourse() == null) {
-                log.error("No course associated with UserCourse ID: {}", userCourse.getId());
-                continue;
+        int currentLectures = 0;
+        int currentSeminars = 0;
+        int currentLabs = 0;
+
+        for (UserCourse uc : userCourses) {
+            switch (uc.getTeachingType()) {
+                case LECTURE:
+                    currentLectures++;
+                    break;
+                case SEMINAR:
+                    currentSeminars++;
+                    break;
+                case LAB:
+                    currentLabs++;
+                    break;
             }
-            log.info("Course code: {}", userCourse.getCourse().getCourseCode());
         }
+
+//        for (UserCourse userCourse : userCourses) {
+//            if (userCourse.getCourse() == null) {
+//                log.error("No course associated with UserCourse ID: {}", userCourse.getId());
+//                continue;
+//            }
+//            log.info("Course code: {}", userCourse.getCourse().getCourseCode());
+//        }
         Map<String, Map<String, Boolean>> usersMap = new HashMap<>();
         for (UserCourse userCourse : userCourses) {
             String username = userCourse.getUser().getUsername();
@@ -75,6 +93,20 @@ public class CourseController {
         }
 
 
+        Map<Long, Integer> currentLabSumsMax = new HashMap<>();
+        Map<Long, Integer> currentLabSumsMin = new HashMap<>();
+
+        int sumMaxLab = userCourseService.sumMaxLabByCourseId(course.getId());
+        currentLabSumsMax.put(course.getId(), sumMaxLab);
+
+        int sumMinLab = userCourseService.sumMinLabByCourseId(course.getId());
+        currentLabSumsMin.put(course.getId(), sumMinLab);
+
+
+        model.addAttribute("currentLabSumsMax", currentLabSumsMax);
+        model.addAttribute("currentLabSumsMin", currentLabSumsMin);
+
+
         model.addAttribute("users", users);
         model.addAttribute("courseId", courseId);
         model.addAttribute("course", course);
@@ -83,6 +115,9 @@ public class CourseController {
         model.addAttribute("newRecord", new UserCourse());
         model.addAttribute("user_courses", userCourses);
 
+        model.addAttribute("currentLectures", currentLectures);
+        model.addAttribute("currentSeminars", currentSeminars);
+        model.addAttribute("currentLabs", currentLabs);
         log.info("Fetched users: {}", users);
         log.info("Fetched user courses: {}", userCourses);
         log.info("ActionLog.renderCoursesPage.end with courseId: {}", courseId);
@@ -251,12 +286,18 @@ public class CourseController {
 
         boolean alreadyHasCourse = userCourseService.existsByUserAndCourseAndTeachingType(user, course, teachingType);
 
-
-        if (alreadyHasCourse) {
-            redirectAttributes.addFlashAttribute("recordExists", "User already has this course with selected teaching type.");
-            System.out.println("User already has this course");
+        boolean existUserWithLabs = userCourseService.existsByUserAndCourseAndTeachingType(user, course, TeachingType.LAB);
+        if(existUserWithLabs && course.hasLabs() && teachingType != TeachingType.SEMINAR && teachingType != TeachingType.LECTURE ){
+            redirectAttributes.addFlashAttribute("LabRecordExists", "User already has this lab class");
             return "redirect:/courses/" + courseId;
         }
+
+
+//        if (alreadyHasCourse) {
+//            redirectAttributes.addFlashAttribute("recordExists", "User already has this course with selected teaching type.");
+//            System.out.println("User already has this course");
+//            return "redirect:/courses/" + courseId;
+//        }
 
         userCourse.setUser(user);
         userCourse.setCourse(course);

@@ -22,14 +22,27 @@ public class Course {
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserCourse> userCourses = new HashSet<>();
 
+
+    private int numLecture = 0;
+    private int numSeminar = 0;
+    private int numLab = 0;
+    private int currentLecture = 0;
+    private int currentSeminar = 0;
+    private int currentLab = 0;
     private boolean hasLabs;
 
-    private int desiredLab;
+//    private int desiredLab;
 
     private boolean approvedAll;
-    public Course(String courseCode, boolean hasLabs) {
+    public Course(String courseCode, boolean hasLabs, int numLecture, int numSeminar, int numLab, int currentLecture, int currentSeminar, int currentLab) {
         this.courseCode = courseCode;
         this.hasLabs = hasLabs;
+        this.numLecture = numLecture;
+        this.numSeminar = numSeminar;
+        this.numLab = numLab;
+        this.currentLecture = currentLecture;
+        this.currentSeminar = currentSeminar;
+        this.currentLab = currentLab;
     }
     public boolean hasLabs() {
         return hasLabs;

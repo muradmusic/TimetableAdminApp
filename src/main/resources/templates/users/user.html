@@ -61,7 +61,11 @@
         </thead>
         <tbody>
         <tr th:each="userCourse : ${user_courses}">
-          <td th:text="${userCourse.course.courseCode}"></td>
+          <td>
+            <a th:href="@{'/courses/' + ${userCourse.course.id}}">
+              <span th:text="${userCourse.course.courseCode}"></span>
+            </a>
+          </td>
           <td th:text="${userCourse.teachingType.name()}"></td>
           <td th:text="${userCourse.course.hasLabs}"></td>
           <td>

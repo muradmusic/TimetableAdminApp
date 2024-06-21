@@ -67,7 +67,7 @@ public class UserCourseServiceImpl implements UserCourseService {
 
     @Override
     public boolean existsByUserAndCourseAndTeachingType(User user, Course course, TeachingType teachingType) {
-        return userCourseRepository.existsByUserAndCourseAndTeachingType(user, course, teachingType);
+        return userCourseRepository.existsByUserAndCourseAndTeachingType(user, course, teachingType) ;
     }
 
     @Override

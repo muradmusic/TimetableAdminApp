@@ -35,6 +35,8 @@ public class UserCourse {
     private int minLab = 0;
     private int maxLab = 0;
 
+
+
     public UserCourse(User user, Course course, TeachingType teachingType) {
         this.user = user;
         this.course = course;

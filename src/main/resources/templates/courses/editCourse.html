@@ -22,9 +22,18 @@
             <label class="form-check-label" for="hasLabs">Has Labs?</label>
         </div>
         <div class="form-group">
-            <label for="desiredLab">Desired Number of Labs:</label>
-            <input type="number" th:field="*{desiredLab}" class="form-control" id="desiredLab" min="0">
+            <label for="desiredLab"> Number of Lectures:</label>
+            <input type="number" th:field="*{numLecture}" class="form-control" id="desiredLecture" min="0">
         </div>
+        <div class="form-group">
+            <label for="desiredLab"> Number of Seminars:</label>
+            <input type="number" th:field="*{numSeminar}" class="form-control" id="desiredSeminar" min="0">
+        </div>
+        <div class="form-group">
+            <label for="desiredLab"> Number of Labs:</label>
+            <input type="number" th:field="*{numLab}" class="form-control" id="desiredLab" min="0">
+        </div>
+
         <button type="submit" class="btn btn-primary">Update</button>
         <a th:href="@{/courses/all}" class="btn btn-secondary">Cancel</a>
     </form>

@@ -42,15 +42,7 @@ public class TeacherController {
     private UserCourseRepository userCourseRepository;
     @Autowired
     private CourseService courseService;
-
-    @Autowired
-    private CourseRepository courseRepository;
-
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
-
-    @Autowired
-    private UserCourseService userCourseService;
-
 
     @GetMapping("/{userId}")
     public String renderUserPage(@PathVariable Long userId, Model model) {
