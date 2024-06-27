@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final UserRepository userRepository;
+
     @Autowired
     public CustomLoginSuccessHandler(UserRepository userRepository) {
         this.userRepository = userRepository;

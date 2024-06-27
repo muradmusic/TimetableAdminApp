@@ -16,12 +16,10 @@ public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String courseCode;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserCourse> userCourses = new HashSet<>();
-
 
     private int numLecture = 0;
     private int numSeminar = 0;
@@ -32,6 +30,7 @@ public class Course {
     private boolean hasLabs;
 
     private boolean covered;
+
     public Course(String courseCode, boolean hasLabs, boolean covered, int numLecture, int numSeminar, int numLab, int currentLecture, int currentSeminar, int currentLab) {
         this.courseCode = courseCode;
         this.hasLabs = hasLabs;
@@ -43,11 +42,10 @@ public class Course {
         this.currentSeminar = currentSeminar;
         this.currentLab = currentLab;
     }
+
     public boolean hasLabs() {
         return hasLabs;
     }
-//    public boolean approvedAll(){
-//        return approvedAll;
-//    }
+
 
 }

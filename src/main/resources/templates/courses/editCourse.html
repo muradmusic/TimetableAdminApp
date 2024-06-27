@@ -12,7 +12,7 @@
     <div th:if="${courseCodeExists}" class="alert alert-warning" th:text="${courseCodeExists}"></div>
 
     <form th:action="@{/courses/edit}" th:object="${course}" method="post">
-        <input type="hidden" th:field="*{id}" />
+        <input type="hidden" th:field="*{id}"/>
         <div class="form-group">
             <label for="courseCode">Course Code:</label>
             <input type="text" th:field="*{courseCode}" class="form-control" id="courseCode" required>

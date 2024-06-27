@@ -1,4 +1,4 @@
-package com.example.thesisproject.service;
+package com.example.thesisproject.service.impl;
 
 
 import com.example.thesisproject.datamodel.dto.CourseDataDto;
@@ -9,11 +9,11 @@ import com.example.thesisproject.datamodel.enums.Decision;
 import com.example.thesisproject.datamodel.enums.TeachingType;
 import com.example.thesisproject.repository.CourseRepository;
 import com.example.thesisproject.repository.UserCourseRepository;
+import com.example.thesisproject.service.CourseService;
+import com.example.thesisproject.service.UserCourseService;
+import com.example.thesisproject.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import org.mapstruct.control.MappingControl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -35,7 +35,7 @@ public class CourseServiceImpl implements CourseService {
     private UserCourseService userCourseService;
 
     @Autowired
-    public CourseServiceImpl(CourseRepository courseRepository, UserCourseRepository userCourseRepository, UserCourseService userCourseService , UserService userService) {
+    public CourseServiceImpl(CourseRepository courseRepository, UserCourseRepository userCourseRepository, UserCourseService userCourseService, UserService userService) {
         this.courseRepository = courseRepository;
         this.userCourseRepository = userCourseRepository;
         this.userCourseService = userCourseService;
@@ -44,19 +44,9 @@ public class CourseServiceImpl implements CourseService {
 
 
     @Override
-    public Course saveCourse(Course course) {
-        return courseRepository.save(course);
-    }
-
-    @Override
     public Course getCourseById(Long courseId) {
         return courseRepository.findById(courseId)
                 .orElseThrow(() -> new EntityNotFoundException("Course not found with id: " + courseId));
-    }
-
-    @Override
-    public Course findCourseByCourseCode(String courseCode) {
-        return courseRepository.findByCourseCode(courseCode);
     }
 
 
@@ -101,9 +91,6 @@ public class CourseServiceImpl implements CourseService {
         return true;
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(CourseService.class);
-
-
     public void updateCourseCoveredStatus(Long courseId) {
         Optional<Course> optionalCourse = courseRepository.findById(courseId);
         if (optionalCourse.isPresent()) {
@@ -121,7 +108,6 @@ public class CourseServiceImpl implements CourseService {
             int totalMinLab = 0;
             int totalMaxLab = 0;
 
-            boolean allApproved = true;
 
             for (UserCourse uc : userCourses) {
                 switch (uc.getTeachingType()) {
@@ -129,16 +115,12 @@ public class CourseServiceImpl implements CourseService {
                         currentLectures++;
                         if (uc.getDecision() == Decision.YES) {
                             approvedLectures++;
-                        } else {
-                            allApproved = false;
                         }
                         break;
                     case SEMINAR:
                         currentSeminars++;
                         if (uc.getDecision() == Decision.YES) {
                             approvedSeminars++;
-                        } else {
-                            allApproved = false;
                         }
                         break;
                     case LAB:
@@ -147,8 +129,6 @@ public class CourseServiceImpl implements CourseService {
                             approvedLabs++;
                             totalMinLab += uc.getMinLab();
                             totalMaxLab += uc.getMaxLab();
-                        } else {
-                            allApproved = false;
                         }
                         break;
                 }
@@ -160,11 +140,6 @@ public class CourseServiceImpl implements CourseService {
 
             boolean allLecturesApproved = approvedLectures >= course.getNumLecture();
             boolean allSeminarsApproved = approvedSeminars >= course.getNumSeminar();
-            boolean allLabsApproved = approvedLabs >= course.getNumLab();
-
-            logger.info("All Lectures Approved: {}", allLecturesApproved);
-            logger.info("All Seminars Approved: {}", allSeminarsApproved);
-            logger.info("All Labs Approved: {}", allLabsApproved);
 
             boolean labRequirementsMet = true;
             if (course.isHasLabs()) {
@@ -348,11 +323,6 @@ public class CourseServiceImpl implements CourseService {
             }
         }
     }
-
-
-
-
-
 
 
 }

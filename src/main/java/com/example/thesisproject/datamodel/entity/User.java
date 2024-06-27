@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-//import javax.persistence.*;
+
 import javax.validation.constraints.NotBlank;
 import java.util.*;
 
@@ -15,15 +15,13 @@ import java.util.*;
 @Table(name = "users")
 @NoArgsConstructor
 @Getter
-public  class User {
-    
+public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @NotBlank
     private String username;
-
     @NotBlank
     private String password;
 

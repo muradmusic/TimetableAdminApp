@@ -36,38 +36,40 @@ public class SecurityConfiguration {
 
     @Autowired
     UserRepository userRepository;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    
-    
+
+
         http.formLogin(formLogin -> formLogin
-                                .permitAll()
+                        .permitAll()
                 )
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                          .requestMatchers("/").permitAll()  
-                                .requestMatchers("/users/**").hasRole("ADMIN")
-                                .requestMatchers("/courses/**").hasRole("ADMIN")
-                                .anyRequest().authenticated()
+                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/users/**").hasRole("ADMIN")
+                        .requestMatchers("/courses/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
                 )
                 .formLogin(formLogin -> formLogin
                         .successHandler(customLoginSuccessHandler(userRepository)))
 
-            .exceptionHandling((exceptionHandling) ->
-                    exceptionHandling
-                            .accessDeniedPage("/403"))
+                .exceptionHandling((exceptionHandling) ->
+                        exceptionHandling
+                                .accessDeniedPage("/403"))
 
-            .logout(logout -> logout.permitAll()
-                    .invalidateHttpSession(true) 
-                    .deleteCookies("JSESSIONID")); 
+                .logout(logout -> logout.permitAll()
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID"));
 
-    return http.build();
-}
+        return http.build();
+    }
 
     @Bean
     public CustomLoginSuccessHandler customLoginSuccessHandler(UserRepository userRepository) {
         return new CustomLoginSuccessHandler(userRepository);
     }
+
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService);

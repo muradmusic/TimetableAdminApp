@@ -25,9 +25,6 @@
             </ul>
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-<!--                    <a class="nav-link" href="#">-->
-<!--                        <span sec:authentication="name"></span>-->
-<!--                    </a>-->
                     <a class="nav-link" th:href="@{'/users/' + ${userId}}">
                         <span sec:authentication="name"></span>
                     </a>
@@ -50,9 +47,9 @@
         <tbody>
         <tr th:each="user : ${users}">
             <td>
-            <a th:href="@{'/users/' + ${user.id}}">
-                <span th:text="${user.username}"></span>
-            </a>
+                <a th:href="@{'/users/' + ${user.id}}">
+                    <span th:text="${user.username}"></span>
+                </a>
             </td>
             <td>
                 <form th:action="@{'/users/' + ${user.id} + '/edit'}" method="get">

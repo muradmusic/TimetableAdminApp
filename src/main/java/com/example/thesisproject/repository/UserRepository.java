@@ -8,12 +8,12 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
     User findUserByUsername(String username);
+    boolean existsByUsername(String username);
+
     @Modifying
     @Transactional
     @Query(value = "DELETE FROM user_roles WHERE user_id = ?1", nativeQuery = true)

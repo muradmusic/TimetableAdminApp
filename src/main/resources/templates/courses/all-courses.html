@@ -1,77 +1,77 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
-  <meta charset="UTF-8">
-  <title>All Courses</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <title>All Courses</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
 
 <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand" th:href="@{/users/all}" style="font-weight: bold;">Home</a>
-    <div class="collapse navbar-collapse" id="mynavbar">
-      <ul class="navbar-nav me-auto">
-        <li class="nav-item">
-          <a class="nav-link" th:href="@{/users/all}">Users</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" th:href="@{/courses/all}">Courses</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" th:href="@{/logout}">Logout</a>
-        </li>
-      </ul>
-      <ul class="navbar-nav ml-auto">
-        <li class="nav-item">
-<!--          <a class="nav-link" href="#">-->
-          <a class="nav-link" th:href="@{'/users/' + ${userId}}">
-          <span sec:authentication="name"></span>
-          </a>
-      </ul>
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/users/all}" style="font-weight: bold;">Home</a>
+        <div class="collapse navbar-collapse" id="mynavbar">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/users/all}">Users</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/courses/all}">Courses</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/logout}">Logout</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <!--          <a class="nav-link" href="#">-->
+                    <a class="nav-link" th:href="@{'/users/' + ${userId}}">
+                        <span sec:authentication="name"></span>
+                    </a>
+            </ul>
+        </div>
     </div>
-  </div>
 </nav>
 
 <div class="container mt-4">
-  <h2>All Courses</h2>
+    <h2>All Courses</h2>
 
-  <a th:href="@{/courses/create}" class="btn btn-primary mb-2">Create a new Course</a>
+    <a th:href="@{/courses/create}" class="btn btn-primary mb-2">Create a new Course</a>
 
-  <table class="table table-bordered">
-    <thead class="thead-dark">
-    <tr>
-      <th>Course Code</th>
-      <th>Course Coverage</th>
-      <th>Edit</th>
-      <th>Delete</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="course : ${courses}">
-      <td>
-        <a th:href="@{'/courses/' + ${course.id}}">
-          <span th:text="${course.courseCode}"></span>
-        </a>
-      </td>
-      <td>
-        <span th:if="${course.covered}" th:text="'Yes'"></span>
-        <span th:unless="${course.covered}" th:text="'No'"></span>
-      </td>
-      <td>
-        <form th:action="@{'/courses/' + ${course.id} + '/edit'}" method="get">
-          <button type="submit" class="btn btn-primary">Edit</button>
-        </form>
-      </td>
-      <td>
-        <form th:action="@{${course.id} + '/delete'}" method="post"
-              onsubmit="return confirm('Are you sure you want to delete this course? All related data will also be deleted!');">
-          <button type="submit" class="btn btn-danger">Delete</button>
-        </form>
-      </td>
-    </tr>
-    </tbody>
-  </table>
+    <table class="table table-bordered">
+        <thead class="thead-dark">
+        <tr>
+            <th>Course Code</th>
+            <th>Course Coverage</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="course : ${courses}">
+            <td>
+                <a th:href="@{'/courses/' + ${course.id}}">
+                    <span th:text="${course.courseCode}"></span>
+                </a>
+            </td>
+            <td>
+                <span th:if="${course.covered}" th:text="'Yes'"></span>
+                <span th:unless="${course.covered}" th:text="'No'"></span>
+            </td>
+            <td>
+                <form th:action="@{'/courses/' + ${course.id} + '/edit'}" method="get">
+                    <button type="submit" class="btn btn-primary">Edit</button>
+                </form>
+            </td>
+            <td>
+                <form th:action="@{${course.id} + '/delete'}" method="post"
+                      onsubmit="return confirm('Are you sure you want to delete this course? All related data will also be deleted!');">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 
 </div>
 

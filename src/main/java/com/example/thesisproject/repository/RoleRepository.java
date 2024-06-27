@@ -9,9 +9,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface RoleRepository extends JpaRepository<Role,Long> {
+public interface RoleRepository extends JpaRepository<Role, Long> {
 
     Role findByName(String name);
+
     @Query("SELECT r FROM Role r INNER JOIN r.users u WHERE u.id = :userId")
     List<Role> findRolesByUserId(@Param("userId") Long userId);
 

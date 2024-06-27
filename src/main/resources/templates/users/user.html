@@ -1,216 +1,222 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
-  <meta charset="UTF-8">
-  <title>User</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <title>User</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
 <meta name="csrf-token" content="${_csrf.token}"/>
 
 <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand" th:href="@{/users/all}" style="font-weight: bold;">Home</a>
-    <div class="collapse navbar-collapse" id="mynavbar">
-      <ul class="navbar-nav me-auto">
-        <li class="nav-item">
-          <a class="nav-link" th:href="@{/users/all}">Users</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" th:href="@{/courses/all}">Courses</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" th:href="@{/logout}">Logout</a>
-        </li>
-      </ul>
-      <ul class="navbar-nav ml-auto">
-        <li class="nav-item">
-          <a class="nav-link" href="#">
-            <span sec:authentication="name"></span>
-          </a>
-      </ul>
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/users/all}" style="font-weight: bold;">Home</a>
+        <div class="collapse navbar-collapse" id="mynavbar">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/users/all}">Users</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/courses/all}">Courses</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/logout}">Logout</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <span sec:authentication="name"></span>
+                    </a>
+            </ul>
+        </div>
     </div>
-  </div>
 </nav>
 
 <div class="container mt-4">
 
-  <h2> Registered Courses for Teacher :</h2>
-  <table class="table table-bordered">
-    <thead class="thead-dark">
-    <tr th:each="username : ${user}">
-      <th th:text="${user.username}"></th>
-    </tr>
-    </thead>
-  </table>
-
-
-
-  <div th:if="${user_courses}">
-    <h2>Classes</h2>
-    <form th:action="@{/users/{userId}/changeDecision(userId=${userId})}" method="post">
-      <table class="table table-bordered">
-        <thead class="thead-dark">
-        <tr>
-          <th>Course Code</th>
-          <th>Parallel Type</th>
-          <th>hasLabs</th>
-          <th>Decision to Teach</th>
-          <th>Delete Class</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="userCourse : ${user_courses}">
-          <td>
-            <a th:href="@{'/courses/' + ${userCourse.course.id}}">
-              <span th:text="${userCourse.course.courseCode}"></span>
-            </a>
-          </td>
-          <td th:text="${userCourse.teachingType.name()}"></td>
-          <td th:text="${userCourse.course.hasLabs}"></td>
-          <td>
-            <select th:name="'decision-' + ${userCourse.id}" id="decision-${userCourse.id}">
-              <option value="PENDING" th:selected="${userCourse.decision == T(com.example.thesisproject.datamodel.enums.Decision).PENDING}">PENDING</option>
-              <option value="YES" th:selected="${userCourse.decision == T(com.example.thesisproject.datamodel.enums.Decision).YES}">YES</option>
-              <option value="NO" th:selected="${userCourse.decision == T(com.example.thesisproject.datamodel.enums.Decision).NO}">NO</option>
-            </select>
-          </td>
-          <td>
-            <button type="button" class="btn btn-danger delete-btn"
-                    th:data-user-course-id="${userCourse.id}"
-                    th:data-user-id="${userId}"
-                    onclick="confirmDelete(this)">
-              Delete
-            </button>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-      <button type="submit" class="btn btn-primary">Save Changes</button>
-    </form>
-  </div>
-
-  <h2>Updating Classes</h2>
-  <form th:action="@{'/users/saveUserCourseChanges/' + ${user.id}}" method="post">
+    <h2> Registered Courses for Teacher :</h2>
     <table class="table table-bordered">
-      <thead class="thead-dark">
-      <tr>
-        <th>Course Code</th>
-        <th>Lecture</th>
-        <th>Lab</th>
-        <th>Seminar</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr th:each="courseEntry : ${coursesMap.entrySet()}">
-        <td th:text="${courseEntry.key}"></td>
-        <td>
-          <input type="checkbox" th:name="|${courseEntry.key}-LECTURE|" th:checked="${courseEntry.value['LECTURE']}" />
-        </td>
-        <td>
-          <input type="checkbox" th:name="|${courseEntry.key}-LAB|" th:checked="${courseEntry.value['LAB']}" />
-        </td>
-        <td>
-          <input type="checkbox" th:name="|${courseEntry.key}-SEMINAR|" th:checked="${courseEntry.value['SEMINAR']}" />
-        </td>
-      </tr>
-      </tbody>
-    </table>
-    <button type="submit" class="btn btn-primary">Save Changes</button>
-  </form>
-
-
-  <div th:if="${user_courses}">
-    <h2>Lab Classes</h2>
-    <form th:action="@{'/users/' + ${userId} + '/labs'}" method="post">
-      <table class="table table-bordered">
         <thead class="thead-dark">
-        <tr>
-          <th>Course Code</th>
-          <th>Min</th>
-          <th>Max</th>
+        <tr th:each="username : ${user}">
+            <th th:text="${user.username}"></th>
         </tr>
         </thead>
-        <tbody>
-        <tr th:each="userCourse : ${user_courses}" th:if="${userCourse.course.hasLabs and userCourse.teachingType.name() == 'LAB'}">
-          <td>
-            <a th:href="@{'/courses/' + ${userCourse.course.id}}">
-              <span th:text="${userCourse.course.courseCode}"></span>
-            </a>
-          </td>
-          <td>
-            <input type="number" th:name="'minLab[' + ${userCourse.id} + ']'" th:value="${userCourse.minLab}" class="form-control" min="0" />
-          </td>
-          <td>
-            <input type="number" th:name="'maxLab[' + ${userCourse.id} + ']'" th:value="${userCourse.maxLab}" class="form-control" min="0"/>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-      <button type="submit" class="btn btn-primary">Save Changes</button>
+    </table>
+
+
+    <div th:if="${user_courses}">
+        <h2>Classes</h2>
+        <form th:action="@{/users/{userId}/changeDecision(userId=${userId})}" method="post">
+            <table class="table table-bordered">
+                <thead class="thead-dark">
+                <tr>
+                    <th>Course Code</th>
+                    <th>Parallel Type</th>
+                    <th>hasLabs</th>
+                    <th>Decision to Teach</th>
+                    <th>Delete Class</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="userCourse : ${user_courses}">
+                    <td>
+                        <a th:href="@{'/courses/' + ${userCourse.course.id}}">
+                            <span th:text="${userCourse.course.courseCode}"></span>
+                        </a>
+                    </td>
+                    <td th:text="${userCourse.teachingType.name()}"></td>
+                    <td th:text="${userCourse.course.hasLabs}"></td>
+                    <td>
+                        <select th:name="'decision-' + ${userCourse.id}" id="decision-${userCourse.id}">
+                            <option value="PENDING"
+                                    th:selected="${userCourse.decision == T(com.example.thesisproject.datamodel.enums.Decision).PENDING}">
+                                PENDING
+                            </option>
+                            <option value="YES"
+                                    th:selected="${userCourse.decision == T(com.example.thesisproject.datamodel.enums.Decision).YES}">
+                                YES
+                            </option>
+                            <option value="NO"
+                                    th:selected="${userCourse.decision == T(com.example.thesisproject.datamodel.enums.Decision).NO}">
+                                NO
+                            </option>
+                        </select>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger delete-btn"
+                                th:data-user-course-id="${userCourse.id}"
+                                th:data-user-id="${userId}"
+                                onclick="confirmDelete(this)">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
+    </div>
+
+    <h2>Updating Classes</h2>
+    <form th:action="@{'/users/saveUserCourseChanges/' + ${user.id}}" method="post">
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+            <tr>
+                <th>Course Code</th>
+                <th>Lecture</th>
+                <th>Lab</th>
+                <th>Seminar</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="courseEntry : ${coursesMap.entrySet()}">
+                <td th:text="${courseEntry.key}"></td>
+                <td>
+                    <input type="checkbox" th:name="|${courseEntry.key}-LECTURE|"
+                           th:checked="${courseEntry.value['LECTURE']}"/>
+                </td>
+                <td>
+                    <input type="checkbox" th:name="|${courseEntry.key}-LAB|" th:checked="${courseEntry.value['LAB']}"/>
+                </td>
+                <td>
+                    <input type="checkbox" th:name="|${courseEntry.key}-SEMINAR|"
+                           th:checked="${courseEntry.value['SEMINAR']}"/>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
     </form>
-  </div>
 
 
-
-  <h1 class="py-5">Adding New Class</h1>
-
-  <div th:if="${LabRecordExists}" class="alert alert-danger" th:text="${LabRecordExists}"></div>
-
-
-  <form action="/users/{userId}" method="post" th:object="${newRecord}" th:action="@{'/users/' + ${user.id}}">
-    <div class="form-group">
-      <label for="course">Select Course:</label>
-      <select class="form-control" id="courseId" name="courseId" required>
-        <option hidden value="">Select a course</option>
-        <option th:each="course : ${courses}" th:value="${course.id}" th:text="${course.courseCode}"></option>
-      </select>
+    <div th:if="${user_courses}">
+        <h2>Lab Classes</h2>
+        <form th:action="@{'/users/' + ${userId} + '/labs'}" method="post">
+            <table class="table table-bordered">
+                <thead class="thead-dark">
+                <tr>
+                    <th>Course Code</th>
+                    <th>Min</th>
+                    <th>Max</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="userCourse : ${user_courses}"
+                    th:if="${userCourse.course.hasLabs and userCourse.teachingType.name() == 'LAB'}">
+                    <td>
+                        <a th:href="@{'/courses/' + ${userCourse.course.id}}">
+                            <span th:text="${userCourse.course.courseCode}"></span>
+                        </a>
+                    </td>
+                    <td>
+                        <input type="number" th:name="'minLab[' + ${userCourse.id} + ']'"
+                               th:value="${userCourse.minLab}" class="form-control" min="0"/>
+                    </td>
+                    <td>
+                        <input type="number" th:name="'maxLab[' + ${userCourse.id} + ']'"
+                               th:value="${userCourse.maxLab}" class="form-control" min="0"/>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
     </div>
-    <div class="form-group">
-      <label for="teachingType">Parallel Type:</label>
-      <select class="form-control" id="teachingType" name="teachingType" required>
-        <option hidden value="">Select a parallel type</option>
-        <option th:each="teachingType : ${allTeachingTypes}" th:value="${teachingType.name()}" th:text="${teachingType.name()}"></option>
-      </select>
-    </div>
-    <input class="btn btn-primary" type="submit" value="Create Record">
-  </form>
+
+
+    <h1 class="py-5">Adding New Class</h1>
+
+    <div th:if="${LabRecordExists}" class="alert alert-danger" th:text="${LabRecordExists}"></div>
+
+
+    <form action="/users/{userId}" method="post" th:object="${newRecord}" th:action="@{'/users/' + ${user.id}}">
+        <div class="form-group">
+            <label for="course">Select Course:</label>
+            <select class="form-control" id="courseId" name="courseId" required>
+                <option hidden value="">Select a course</option>
+                <option th:each="course : ${courses}" th:value="${course.id}" th:text="${course.courseCode}"></option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="teachingType">Parallel Type:</label>
+            <select class="form-control" id="teachingType" name="teachingType" required>
+                <option hidden value="">Select a parallel type</option>
+                <option th:each="teachingType : ${allTeachingTypes}" th:value="${teachingType.name()}"
+                        th:text="${teachingType.name()}"></option>
+            </select>
+        </div>
+        <input class="btn btn-primary" type="submit" value="Create Record">
+    </form>
 
 </div>
 
 
 <script>
-  function confirmDelete(element) {
+    function confirmDelete(element) {
 
-    var userCourseId = element.getAttribute('data-user-course-id');
-    var userId = element.getAttribute('data-user-id');
-    var confirmed = confirm('Are you sure you want to delete this record?');
+        var userCourseId = element.getAttribute('data-user-course-id');
+        var userId = element.getAttribute('data-user-id');
+        var confirmed = confirm('Are you sure you want to delete this record?');
 
-    if (confirmed) {
-      // AJAX request to delete the class
-      fetch(`/users/${userId}/deleteUserCourse?userCourseId=${userCourseId}`, {
-        method: 'POST',
-        headers: {
-          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-        },
-      })
-              .then(response => {
-                if (response.ok) {
-                  window.location.reload();
-                } else {
-                  alert('Failed to delete the record.');
-                }
-              })
-              .catch(error => console.error('Error deleting the record:', error));
+        if (confirmed) {
+            fetch(`/users/${userId}/deleteUserCourse?userCourseId=${userCourseId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                },
+            })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        alert('Failed to delete the record.');
+                    }
+                })
+                .catch(error => console.error('Error deleting the record:', error));
+        }
     }
-  }
 </script>
-
-
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.0/css/select2.min.css">
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.0/js/select2.min.js"></script>
 
 </body>
 </html>

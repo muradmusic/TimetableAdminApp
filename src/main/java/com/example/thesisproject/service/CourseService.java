@@ -13,16 +13,17 @@ import java.util.Map;
 
 @Service
 public interface CourseService {
-    Course saveCourse(Course course);
     Course getCourseById(Long courseId);
+
     boolean createCourse(Course course);
+
     List<Course> fetchCourses();
-    Course findCourseByCourseCode(String courseCode);
+
     void deleteCourse(Long courseId);
+
     boolean updateCourse(Course course);
+
     void updateCourseCoveredStatus(Long courseId);
-
-
 
     void updateLabs(Long courseId, Map<String, String> allParams);
 
@@ -34,6 +35,6 @@ public interface CourseService {
 
     CourseDataDto prepareCoursePageData(Long courseId);
 
-    }
+}
 
 

@@ -12,9 +12,9 @@
         <a class="navbar-brand" th:href="@{/teacher/{userId}(userId=${userId})}" style="font-weight: bold;">Home</a>
         <div class="collapse navbar-collapse" id="mynavbar">
             <ul class="navbar-nav me-auto">
-            <li class="nav-item">
-                <a class="nav-link" th:href="@{/logout}">Logout</a>
-            </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/logout}">Logout</a>
+                </li>
             </ul>
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
@@ -28,7 +28,7 @@
 
 <div class="container mt-4">
 
-    <h2> Registered Courses for Teacher :</h2>
+    <h2> Registered Classes for Teacher :</h2>
     <table class="table table-bordered">
         <thead class="thead-dark">
         <tr th:each="username : ${user}">
@@ -38,13 +38,13 @@
     </table>
 
     <div th:if="${user_courses}">
-        <h2>Records</h2>
+        <h2>Classes</h2>
         <form th:action="@{/teacher/{userId}/changeDecision(userId=${userId})}" method="post">
             <table class="table table-bordered">
                 <thead class="thead-dark">
                 <tr>
-                    <th>Course</th>
-                    <th>Teaching Type</th>
+                    <th>Course Code</th>
+                    <th>Parallel Type</th>
                     <th>Decision to Teach</th>
                 </tr>
                 </thead>
@@ -54,18 +54,29 @@
                     <td th:text="${userCourse.teachingType.name()}"></td>
                     <td>
                         <select th:name="|decision-${userCourse.id}|" id="|decision-${userCourse.id}|">
-                            <option value="PENDING" th:selected="${userCourse.decision == T(com.example.thesisproject.datamodel.enums.Decision).PENDING}">PENDING</option>
-                            <option value="YES" th:selected="${userCourse.decision == T(com.example.thesisproject.datamodel.enums.Decision).YES}">YES</option>
-                            <option value="NO" th:selected="${userCourse.decision == T(com.example.thesisproject.datamodel.enums.Decision).NO}">NO</option>
+                            <option value="PENDING"
+                                    th:selected="${userCourse.decision == T(com.example.thesisproject.datamodel.enums.Decision).PENDING}">
+                                PENDING
+                            </option>
+                            <option value="YES"
+                                    th:selected="${userCourse.decision == T(com.example.thesisproject.datamodel.enums.Decision).YES}">
+                                YES
+                            </option>
+                            <option value="NO"
+                                    th:selected="${userCourse.decision == T(com.example.thesisproject.datamodel.enums.Decision).NO}">
+                                NO
+                            </option>
                         </select>
                     </td>
                 </tr>
                 </tbody>
             </table>
-            <button type="submit" class="btn btn-primary" onclick="return confirm('Are you sure you want to save this data? Your selection will appear to the admin!');">Save Changes</button>
+            <button type="submit" class="btn btn-primary"
+                    onclick="return confirm('Are you sure you want to save this data? Your selection will appear to the admin!');">
+                Save Changes
+            </button>
         </form>
     </div>
-
 
 
     <div th:if="${user_courses}">
@@ -80,13 +91,16 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="userCourse : ${user_courses}" th:if="${userCourse.course.hasLabs and userCourse.teachingType.name() == 'LAB'}">
+                <tr th:each="userCourse : ${user_courses}"
+                    th:if="${userCourse.course.hasLabs and userCourse.teachingType.name() == 'LAB'}">
                     <td th:text="${userCourse.course.courseCode}"></td>
                     <td>
-                        <input type="number" th:name="'minLab[' + ${userCourse.id} + ']'" th:value="${userCourse.minLab}" class="form-control" min="0" />
+                        <input type="number" th:name="'minLab[' + ${userCourse.id} + ']'"
+                               th:value="${userCourse.minLab}" class="form-control" min="0"/>
                     </td>
                     <td>
-                        <input type="number" th:name="'maxLab[' + ${userCourse.id} + ']'" th:value="${userCourse.maxLab}" class="form-control" min="0"/>
+                        <input type="number" th:name="'maxLab[' + ${userCourse.id} + ']'"
+                               th:value="${userCourse.maxLab}" class="form-control" min="0"/>
                     </td>
                 </tr>
                 </tbody>
@@ -95,17 +109,8 @@
         </form>
     </div>
 
-
-    <!--    -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
-
-
-
-
 </div>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.0/css/select2.min.css">
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.0/js/select2.min.js"></script>
 
 </body>
 </html>

@@ -1,4 +1,4 @@
-package com.example.thesisproject.service;
+package com.example.thesisproject.service.impl;
 
 
 import com.example.thesisproject.datamodel.entity.Course;
@@ -7,6 +7,7 @@ import com.example.thesisproject.datamodel.entity.UserCourse;
 import com.example.thesisproject.datamodel.enums.TeachingType;
 import com.example.thesisproject.repository.CourseRepository;
 import com.example.thesisproject.repository.UserCourseRepository;
+import com.example.thesisproject.service.UserCourseService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
@@ -45,19 +46,10 @@ public class UserCourseServiceImpl implements UserCourseService {
             userCourseRepository.deleteById(userCourseId);
         }
     }
+
     @Override
     public boolean existsUserCourse(Long userCourseId) {
         return userCourseRepository.existsById(userCourseId);
-    }
-
-    @Override
-    public void deleteUserCourseByUserId(Long userId) {
-        userCourseRepository.deleteByUserId(userId);
-    }
-
-    @Override
-    public void deleteUserCourseByCourseId(Long courseId) {
-        userCourseRepository.deleteByCourseId(courseId);
     }
 
     @Override
@@ -67,7 +59,7 @@ public class UserCourseServiceImpl implements UserCourseService {
 
     @Override
     public boolean existsByUserAndCourseAndTeachingType(User user, Course course, TeachingType teachingType) {
-        return userCourseRepository.existsByUserAndCourseAndTeachingType(user, course, teachingType) ;
+        return userCourseRepository.existsByUserAndCourseAndTeachingType(user, course, teachingType);
     }
 
     @Override
@@ -82,48 +74,9 @@ public class UserCourseServiceImpl implements UserCourseService {
     }
 
     @Override
-    public List<UserCourse> getUserCoursesByUserId(Long userId) {
-        return userCourseRepository.findUserCourseByUserId(userId);
-    }
-
-
-    public void createUserCourse(UserCourse userCourse) {
-        boolean userCourseExists = userCourseRepository.existsByUserAndCourseAndTeachingType(
-                userCourse.getUser(),
-                userCourse.getCourse(),
-                userCourse.getTeachingType());
-
-        if (!userCourseExists) {
-            userCourseRepository.save(userCourse);
-        } else {
-            System.out.println("UserCourse already exists for user, course, and teaching type combination.");
-        }
-    }
-
-    @Override
     public List<UserCourse> fetchUserCourses() {
         return userCourseRepository.findAll();
     }
-    public void updateLabValuesForSuitableCourses(List<UserCourse> userCourses, int minLab, int maxLab) {
-        for (UserCourse userCourse : userCourses) {
-            if (userCourse.getTeachingType() == TeachingType.LAB) {
-                Optional<UserCourse> optionalUserCourse = userCourseRepository.findById(userCourse.getId());
-                if (optionalUserCourse.isPresent()) {
-                    UserCourse userCourseToUpdate = optionalUserCourse.get();
-                    userCourseToUpdate.setMinLab(minLab);
-                    userCourseToUpdate.setMaxLab(maxLab);
-                    userCourseRepository.save(userCourseToUpdate);
-                }
-            }
-        }
-    }
-
-    public UserCourse findByCourseCodeAndUserIdAndTeachingType(String courseCode, Long userId, TeachingType teachingType) {
-        return userCourseRepository.findByCourse_CourseCodeAndUser_IdAndTeachingType(courseCode, userId, teachingType);
-    }
-
-
-
 
 
 }

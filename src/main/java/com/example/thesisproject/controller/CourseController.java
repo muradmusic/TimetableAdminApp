@@ -3,7 +3,6 @@ package com.example.thesisproject.controller;
 import com.example.thesisproject.datamodel.dto.CourseDataDto;
 import com.example.thesisproject.datamodel.entity.User;
 import com.example.thesisproject.datamodel.entity.UserCourse;
-import com.example.thesisproject.datamodel.enums.Decision;
 import com.example.thesisproject.datamodel.enums.TeachingType;
 import com.example.thesisproject.service.CourseService;
 import com.example.thesisproject.service.UserService;
@@ -13,19 +12,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.Banner;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.example.thesisproject.datamodel.entity.Course;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.util.*;
 
 @Controller
