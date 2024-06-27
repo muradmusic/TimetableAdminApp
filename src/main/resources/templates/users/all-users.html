@@ -25,9 +25,9 @@
             </ul>
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{'/users/' + ${userId}}">
+                    <div class="nav-link">
                         <span sec:authentication="name"></span>
-                    </a>
+                    </div>
             </ul>
         </div>
     </div>

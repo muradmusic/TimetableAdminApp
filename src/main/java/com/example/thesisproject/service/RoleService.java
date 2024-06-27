@@ -5,4 +5,9 @@ import java.util.List;
 
 public interface RoleService {
     List<Role> getRolesByUserId(Long userId);
+
+    Role loadRoleByName(String roleName);
+    Role createRole(String roleName);
+    List<Role> retrieveRoleByUsername(String username);
+
 }

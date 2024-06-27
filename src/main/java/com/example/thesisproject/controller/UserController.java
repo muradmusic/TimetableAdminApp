@@ -3,6 +3,7 @@ package com.example.thesisproject.controller;
 import com.example.thesisproject.datamodel.dto.UserDataDto;
 import com.example.thesisproject.datamodel.entity.*;
 import com.example.thesisproject.datamodel.enums.TeachingType;
+import com.example.thesisproject.service.RoleService;
 import com.example.thesisproject.service.UserService;
 import com.example.thesisproject.service.UserCourseService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,6 +29,9 @@ public class UserController {
     @Autowired
     private UserCourseService userCourseService;
 
+    @Autowired
+
+    private RoleService roleService;
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
@@ -86,6 +90,7 @@ public class UserController {
             return "users/createUser";
         }
 
+        roleService.createRole("ROLE_TEACHER");
         userService.assignRoleToUser(user.getUsername(), "ROLE_TEACHER");
         return "redirect:/users/all";
     }

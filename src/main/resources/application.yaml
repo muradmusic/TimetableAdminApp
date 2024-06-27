@@ -4,15 +4,12 @@ spring:
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
-  # liquibase:
-  #   change-log: classpath:/liquibase/changelog-master.yaml
+
   jpa:
     hibernate:
-      ddl-auto: update
-#    show-sql: true
+      ddl-auto: create
     properties:
       hibernate:
-#        format_sql: true
 
   thymeleaf:
     template-loader-path: classpath:/templates

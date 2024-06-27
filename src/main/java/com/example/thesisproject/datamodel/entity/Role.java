@@ -21,6 +21,10 @@ public class Role {
     @Column(name = "role_id", nullable = false)
     private Long roleId;
 
+    public Role(String name) {
+        this.name = name;
+    }
+
     @Basic
     @Column(name = "name", nullable = false, length = 45, unique = true)
     private String name;
