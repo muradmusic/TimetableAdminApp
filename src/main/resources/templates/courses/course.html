@@ -49,23 +49,23 @@
     </tr>
     <tr>
       <td>
-        <strong>Number of Lectures:</strong>
+        <strong>Number of Lecture Classes:</strong>
         Required: <span th:text="${course.numLecture}"></span>,
         Current: <span th:text="${currentLectures}"></span>
       </td>
     </tr>
     <tr>
       <td>
-        <strong>Number of Seminars:</strong>
+        <strong>Number of Seminar Classes:</strong>
         Required: <span th:text="${course.numSeminar}"></span>,
         Current: <span th:text="${currentSeminars}"></span>
       </td>
     </tr>
-    <tr th:if="${!course.hasLabs}">
+
+    <tr th:if="${course.hasLabs}">
       <td>
-        <strong>Number of Labs:</strong>
-        Required: <span th:text="${course.numLab}"></span>,
-        Current: <span th:text="${currentLabs}"></span>
+        <strong>Number of Lab Classes:</strong>
+        Required: <span th:text="${course.numLab}"></span>
       </td>
     </tr>
     <tr th:if="${course.hasLabs}">
@@ -75,20 +75,17 @@
         <span th:text="${currentLabSumsMax[course.id]}"></span>
       </td>
     </tr>
+    <tr th:unless="${course.hasLabs}">
+      <td>
+        <strong>Number of Lab Classes:</strong>
+        Required: <span th:text="${course.numLab}"></span>,
+        Current: <span th:text="${currentLabs}"></span>
+      </td>
+    </tr>
+
+
     </tbody>
   </table>
-<!--  <table class="table table-bordered">-->
-<!--    <thead class="thead-dark">-->
-<!--    </thead>-->
-<!--    <tbody>-->
-<!--    <tr>-->
-<!--      <td><strong>Course Code:</strong> <span th:text="${course.courseCode}"></span></td>-->
-<!--    </tr>-->
-<!--    </tbody>-->
-<!--    <td  th:text="'Haslabs:' + ${course.hasLabs}"></td>-->
-
-
-<!--  </table>-->
 
   <div th:if="${user_courses}">
     <h2>Classes</h2>
@@ -163,7 +160,7 @@
 
 
   <div th:if="${user_courses}">
-    <h2>Lab Teachers class choice</h2>
+    <h2>Lab Class Management</h2>
     <form th:action="@{'/courses/' + ${courseId} + '/labs'}" method="post">
       <table class="table table-bordered">
         <thead class="thead-dark">
@@ -198,7 +195,7 @@
 
   <h1 class="py-5">Adding New Class</h1>
 <!--  <div th:if="${recordExists}" class="alert alert-warning" th:text="${recordExists}"></div>-->
-  <div th:if="${LabRecordExists}" class="alert alert-warning" th:text="${LabRecordExists}"></div>
+  <div th:if="${LabRecordExists}" class="alert alert-danger" th:text="${LabRecordExists}"></div>
 
   <form action="/courses/{courseId}" method="post" th:object="${newRecord}" th:action="@{'/courses/' + ${course.id}}">
     <div class="form-group">

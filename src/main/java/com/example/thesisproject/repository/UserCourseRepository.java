@@ -21,6 +21,10 @@ public interface UserCourseRepository extends JpaRepository<UserCourse, Long> {
 
     List<UserCourse> findUserCoursesByCourseId(Long courseId);
 
+//    @Query("SELECT uc FROM UserCourse uc WHERE uc.course.id = :courseId AND uc.teachingType = :teachingType")
+    List<UserCourse> findUserCoursesByCourseIdAndTeachingType(Long courseId, TeachingType teachingType);
+
+
     List<UserCourse> findUserCourseByUserId(Long userId);
 
     boolean existsByUserAndCourseAndTeachingType(User user, Course course, TeachingType teachingType);

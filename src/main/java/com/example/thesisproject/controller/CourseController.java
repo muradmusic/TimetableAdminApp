@@ -1,5 +1,6 @@
 package com.example.thesisproject.controller;
 
+import com.example.thesisproject.datamodel.dto.CourseDataDto;
 import com.example.thesisproject.datamodel.entity.User;
 import com.example.thesisproject.datamodel.entity.UserCourse;
 import com.example.thesisproject.datamodel.enums.Decision;
@@ -13,6 +14,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -33,11 +36,8 @@ public class CourseController {
     private UserCourseService userCourseService;
     @Autowired
     private CourseService courseService;
-
     @Autowired
     private UserService userService;
-
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     public CourseController(UserService userService, CourseService courseService, UserCourseService userCourseService) {
         this.userService = userService;
@@ -48,79 +48,20 @@ public class CourseController {
     @GetMapping("/{courseId}")
     public String renderCoursesPage(@PathVariable Long courseId, Model model) {
 
-        log.info("ActionLog.renderCoursesPage.start with courseId: {}", courseId);
+        CourseDataDto courseData = courseService.prepareCoursePageData(courseId);
 
-        List<User> users = userService.fetchUsers();
-        Course course = courseService.getCourseById(courseId);
-
-        List<UserCourse> userCourses = userCourseService.getUserCoursesByCourseId(courseId);
-        List<TeachingType> allTeachingTypes = Arrays.asList(TeachingType.values());
-
-        int currentLectures = 0;
-        int currentSeminars = 0;
-        int currentLabs = 0;
-
-        for (UserCourse uc : userCourses) {
-            switch (uc.getTeachingType()) {
-                case LECTURE:
-                    currentLectures++;
-                    break;
-                case SEMINAR:
-                    currentSeminars++;
-                    break;
-                case LAB:
-                    currentLabs++;
-                    break;
-            }
-        }
-
-//        for (UserCourse userCourse : userCourses) {
-//            if (userCourse.getCourse() == null) {
-//                log.error("No course associated with UserCourse ID: {}", userCourse.getId());
-//                continue;
-//            }
-//            log.info("Course code: {}", userCourse.getCourse().getCourseCode());
-//        }
-        Map<String, Map<String, Boolean>> usersMap = new HashMap<>();
-        for (UserCourse userCourse : userCourses) {
-            String username = userCourse.getUser().getUsername();
-            String teachingType = userCourse.getTeachingType().name();
-
-            Map<String, Boolean> teachingTypes = usersMap.getOrDefault(username, new HashMap<>());
-            teachingTypes.put(teachingType, true); // Mark the teaching type as present
-
-            usersMap.put(username, teachingTypes);
-        }
-
-
-        Map<Long, Integer> currentLabSumsMax = new HashMap<>();
-        Map<Long, Integer> currentLabSumsMin = new HashMap<>();
-
-        int sumMaxLab = userCourseService.sumMaxLabByCourseId(course.getId());
-        currentLabSumsMax.put(course.getId(), sumMaxLab);
-
-        int sumMinLab = userCourseService.sumMinLabByCourseId(course.getId());
-        currentLabSumsMin.put(course.getId(), sumMinLab);
-
-
-        model.addAttribute("currentLabSumsMax", currentLabSumsMax);
-        model.addAttribute("currentLabSumsMin", currentLabSumsMin);
-
-
-        model.addAttribute("users", users);
-        model.addAttribute("courseId", courseId);
-        model.addAttribute("course", course);
-        model.addAttribute("allTeachingTypes", allTeachingTypes);
-        model.addAttribute("usersMap", usersMap);
+        model.addAttribute("users", courseData.users);
+        model.addAttribute("course", courseData.course);
+        model.addAttribute("allTeachingTypes", courseData.allTeachingTypes);
+        model.addAttribute("usersMap", courseData.usersMap);
         model.addAttribute("newRecord", new UserCourse());
-        model.addAttribute("user_courses", userCourses);
+        model.addAttribute("user_courses", courseData.userCourses);
+        model.addAttribute("currentLectures", courseData.currentLectures);
+        model.addAttribute("currentSeminars", courseData.currentSeminars);
+        model.addAttribute("currentLabs", courseData.currentLabs);
+        model.addAttribute("currentLabSumsMax", courseData.currentLabSumsMax);
+        model.addAttribute("currentLabSumsMin", courseData.currentLabSumsMin);
 
-        model.addAttribute("currentLectures", currentLectures);
-        model.addAttribute("currentSeminars", currentSeminars);
-        model.addAttribute("currentLabs", currentLabs);
-        log.info("Fetched users: {}", users);
-        log.info("Fetched user courses: {}", userCourses);
-        log.info("ActionLog.renderCoursesPage.end with courseId: {}", courseId);
         return "courses/course";
     }
 
@@ -129,35 +70,13 @@ public class CourseController {
 
         List<Course> courses = courseService.fetchCourses();
 
-        Map<Long, Integer> currentLabSumsMax = new HashMap<>();
-        for (Course course : courses) {
-            int sumMaxLab = userCourseService.sumMaxLabByCourseId(course.getId());
-            currentLabSumsMax.put(course.getId(), sumMaxLab);
-        }
-        Map<Long, Integer> currentLabSumsMin = new HashMap<>();
-        for (Course course : courses) {
-            int sumMinLab = userCourseService.sumMinLabByCourseId(course.getId());
-            currentLabSumsMin.put(course.getId(), sumMinLab);
-        }
-        for (Course course : courses) {
-            List<UserCourse> userCourses = userCourseService.getUserCoursesByCourseId(course.getId());
-            boolean approvedAll = !userCourses.isEmpty();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User currentUser = userService.findUserByUsername(username);
 
-            for (UserCourse userCourse : userCourses) {
-                if (userCourse.getDecision() != Decision.YES) {
-                    approvedAll = false;
-                    break;
-                }
-            }
-            course.setApprovedAll(approvedAll);
-            courseService.saveCourse(course);
-        }
-
+        model.addAttribute("userId", currentUser.getId());
         model.addAttribute("courses", courses);
-        model.addAttribute("currentLabSumsMax", currentLabSumsMax);
-        model.addAttribute("currentLabSumsMin", currentLabSumsMin);
 
-        log.info("Fetched courses: {}", courses);
         return "courses/all-courses";
     }
 
@@ -212,12 +131,11 @@ public class CourseController {
 
 
     @PostMapping("/edit")
-    public String updateCourse(@ModelAttribute Course course, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
+    public String updateCourse(@ModelAttribute Course course, BindingResult result, Model model) {
 
         if (result.hasErrors()) {
             return "courses/editCourse";
         }
-
         boolean updated = courseService.updateCourse(course);
         if (!updated) {
             model.addAttribute("courseCodeExists", "Course code '" + course.getCourseCode() + "' already exists for another course.");
@@ -227,142 +145,37 @@ public class CourseController {
     }
 
     @PostMapping("/{courseId}/labs")
-    public String updateLabs(@PathVariable Long courseId, @RequestParam Map<String, String> allParams,
-                             RedirectAttributes redirectAttributes) {
+    public String updateLabs(@PathVariable Long courseId, @RequestParam Map<String, String> allParams, RedirectAttributes redirectAttributes) {
 
-        Map<UserCourse, List<Integer>> courseLabsMap = new HashMap<>();
-        allParams.forEach((key, value) -> {
-            if (key.startsWith("minLab[") || key.startsWith("maxLab[")) {
-                Long userCourseId = Long.parseLong(key.replaceAll("\\D+", ""));
-                UserCourse userCourse = userCourseService.getUserCourseById(userCourseId);
-                int labValue = Integer.parseInt(value);
-                if (key.startsWith("minLab")) {
-                    courseLabsMap.computeIfAbsent(userCourse, k -> new ArrayList<>()).add(0, labValue);
-                } else {
-                    courseLabsMap.computeIfAbsent(userCourse, k -> new ArrayList<>()).add(1, labValue);
-                }
-            }
-        });
-        courseLabsMap.forEach((courseCode, labs) -> {
-            System.out.println("Course Code: " + courseCode);
-            System.out.println("MinLab: " + labs.get(0));
-            System.out.println("MaxLab: " + labs.get(1));
-        });
-        courseLabsMap.forEach((userCourse, labs) -> {
-            int min = labs.get(0);
-            int max = labs.get(1);
-            userCourse.setMinLab(min);
-            userCourse.setMaxLab(Math.max(min, max));
-            userCourseService.saveUserCourse(userCourse);
-        });
+        courseService.updateLabs(courseId, allParams);
         redirectAttributes.addFlashAttribute("success", "Labs updated successfully.");
         return "redirect:/courses/" + courseId;
     }
 
     @PostMapping("/{courseId}/changeDecision")
     public String changeDecision(@PathVariable Long courseId, HttpServletRequest request) {
+
         Map<String, String[]> parameters = request.getParameterMap();
-        for (String key : parameters.keySet()) {
-            if (key.startsWith("decision-")) {
-                Long userCourseId = Long.parseLong(key.split("-")[1]);
-                String decisionValue = parameters.get(key)[0];
-                UserCourse userCourse = userCourseService.getUserCourseById(userCourseId);
-                userCourse.setDecision(Decision.valueOf(decisionValue));
-                userCourseService.saveUserCourse(userCourse);
-            }
-        }
+        courseService.changeDecision(courseId, parameters);
         return "redirect:/courses/{courseId}";
     }
 
 
     @PostMapping("/{courseId}")
-    public String addUserCourse(@PathVariable Long courseId, @RequestParam Long userId, @RequestParam TeachingType teachingType, @ModelAttribute UserCourse userCourse, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
+    public String addUserCourse(@PathVariable Long courseId, @RequestParam Long userId, @RequestParam TeachingType teachingType, @ModelAttribute UserCourse userCourse, BindingResult result, RedirectAttributes redirectAttributes) {
 
-        if (result.hasErrors()) {
-            System.out.println("error occurred");
-        }
-        User user = userService.getUserById(userId);
-        Course course = courseService.getCourseById(courseId);
-
-        boolean alreadyHasCourse = userCourseService.existsByUserAndCourseAndTeachingType(user, course, teachingType);
-
-        boolean existUserWithLabs = userCourseService.existsByUserAndCourseAndTeachingType(user, course, TeachingType.LAB);
-        if(existUserWithLabs && course.hasLabs() && teachingType != TeachingType.SEMINAR && teachingType != TeachingType.LECTURE ){
-            redirectAttributes.addFlashAttribute("LabRecordExists", "User already has this lab class");
+        boolean created = courseService.addUserCourse(courseId, userId, teachingType, userCourse, result, redirectAttributes);
+        if (!created) {
             return "redirect:/courses/" + courseId;
         }
-
-
-//        if (alreadyHasCourse) {
-//            redirectAttributes.addFlashAttribute("recordExists", "User already has this course with selected teaching type.");
-//            System.out.println("User already has this course");
-//            return "redirect:/courses/" + courseId;
-//        }
-
-        userCourse.setUser(user);
-        userCourse.setCourse(course);
-        userCourse.setDecision(Decision.PENDING);
-
-        userService.saveUser(user);
-        courseService.saveCourse(course);
-        userCourseService.saveUserCourse(userCourse);
-
         return "redirect:/courses/{courseId}";
     }
 
     @PostMapping("/saveUserCourseChanges/{courseId}")
-    public String updateCourses(@PathVariable Long courseId, HttpServletRequest request, RedirectAttributes redirectAttributes) throws Exception {
+    public String updateCourses(@PathVariable Long courseId, HttpServletRequest request) throws Exception {
+
         Map<String, String[]> parameters = request.getParameterMap();
-
-        List<UserCourse> userCourses = userCourseService.getUserCoursesByCourseId(courseId);
-
-        for (UserCourse userCourse : userCourses) {
-            String key = userCourse.getUser().getUsername() + "-" + userCourse.getTeachingType().name();
-            if (!parameters.containsKey(key)) {
-                System.out.println(key);
-                userCourseService.deleteUserCourse(userCourse);
-            }
-        }
-
-        for (String key : parameters.keySet()) {
-            String[] parts = key.split("-");
-            String username;
-            String courseType;
-
-            if (parts.length == 2) {
-                username = parts[0];
-                courseType = parts[1];
-            } else {
-                username = parts[0] + '-' + parts[1];
-                courseType = parts[2];
-                System.out.println(username);
-
-            }
-            Optional<UserCourse> userCourse = userCourses.stream().filter(
-                    c -> c.getUser().getUsername().equals(username)
-                            && c.getTeachingType().name().equals(courseType)
-            ).findFirst();
-            if (userCourse.isPresent()) {
-                continue;
-            }
-            if (parameters.get(key)[0].equals("on")) {
-                User user = userService.findUserByUsername(username);
-                if (user == null) {
-                    throw new Exception("User not found: " + username);
-                }
-
-                UserCourse newUserCourse = new UserCourse();
-                newUserCourse.setUser(user);
-                newUserCourse.setTeachingType(TeachingType.valueOf(courseType));
-                newUserCourse.setCourse(courseService.getCourseById(courseId));
-                newUserCourse.setDecision(Decision.PENDING);
-                newUserCourse.setMinLab(0);
-                newUserCourse.setMaxLab(0);
-                userCourseService.saveUserCourse(newUserCourse);
-            }
-        }
-
+        courseService.updateCourses(courseId, parameters);
         return "redirect:/courses/" + courseId;
     }
-
 }

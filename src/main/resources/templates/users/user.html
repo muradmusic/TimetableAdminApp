@@ -47,16 +47,16 @@
 
 
   <div th:if="${user_courses}">
-    <h2>Records</h2>
+    <h2>Classes</h2>
     <form th:action="@{/users/{userId}/changeDecision(userId=${userId})}" method="post">
       <table class="table table-bordered">
         <thead class="thead-dark">
         <tr>
-          <th>Course</th>
+          <th>Course Code</th>
           <th>Parallel Type</th>
           <th>hasLabs</th>
           <th>Decision to Teach</th>
-          <th>Delete Record</th>
+          <th>Delete Class</th>
         </tr>
         </thead>
         <tbody>
@@ -90,6 +90,7 @@
     </form>
   </div>
 
+  <h2>Updating Classes</h2>
   <form th:action="@{'/users/saveUserCourseChanges/' + ${user.id}}" method="post">
     <table class="table table-bordered">
       <thead class="thead-dark">
@@ -120,12 +121,12 @@
 
 
   <div th:if="${user_courses}">
-    <h2>Lab Courses</h2>
+    <h2>Lab Classes</h2>
     <form th:action="@{'/users/' + ${userId} + '/labs'}" method="post">
       <table class="table table-bordered">
         <thead class="thead-dark">
         <tr>
-          <th>Course</th>
+          <th>Course Code</th>
           <th>Min</th>
           <th>Max</th>
         </tr>
@@ -152,7 +153,10 @@
 
 
 
-  <h1 class="py-5">Adding New Record</h1>
+  <h1 class="py-5">Adding New Class</h1>
+
+  <div th:if="${LabRecordExists}" class="alert alert-danger" th:text="${LabRecordExists}"></div>
+
 
   <form action="/users/{userId}" method="post" th:object="${newRecord}" th:action="@{'/users/' + ${user.id}}">
     <div class="form-group">
@@ -183,7 +187,7 @@
     var confirmed = confirm('Are you sure you want to delete this record?');
 
     if (confirmed) {
-      // AJAX request to delete the user course
+      // AJAX request to delete the class
       fetch(`/users/${userId}/deleteUserCourse?userCourseId=${userCourseId}`, {
         method: 'POST',
         headers: {

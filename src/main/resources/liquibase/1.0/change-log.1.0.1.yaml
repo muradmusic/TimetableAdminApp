@@ -1,9 +1,0 @@
-databaseChangeLog:
-  - changeSet:
-      id: Update demo table username column type
-      author: Murad Mammadli
-      changes:
-        - modifyDataType:
-            tableName: demo
-            columnName: username
-            newDataType: varchar(128)

@@ -107,14 +107,11 @@ public class UserCourseServiceImpl implements UserCourseService {
     public void updateLabValuesForSuitableCourses(List<UserCourse> userCourses, int minLab, int maxLab) {
         for (UserCourse userCourse : userCourses) {
             if (userCourse.getTeachingType() == TeachingType.LAB) {
-                // Fetch the UserCourse entity by its ID
                 Optional<UserCourse> optionalUserCourse = userCourseRepository.findById(userCourse.getId());
                 if (optionalUserCourse.isPresent()) {
                     UserCourse userCourseToUpdate = optionalUserCourse.get();
-                    // Update the minLab and maxLab values
                     userCourseToUpdate.setMinLab(minLab);
                     userCourseToUpdate.setMaxLab(maxLab);
-                    // Save the updated UserCourse entity
                     userCourseRepository.save(userCourseToUpdate);
                 }
             }
@@ -124,5 +121,9 @@ public class UserCourseServiceImpl implements UserCourseService {
     public UserCourse findByCourseCodeAndUserIdAndTeachingType(String courseCode, Long userId, TeachingType teachingType) {
         return userCourseRepository.findByCourse_CourseCodeAndUser_IdAndTeachingType(courseCode, userId, teachingType);
     }
+
+
+
+
 
 }

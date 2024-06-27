@@ -25,7 +25,10 @@
             </ul>
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+<!--                    <a class="nav-link" href="#">-->
+<!--                        <span sec:authentication="name"></span>-->
+<!--                    </a>-->
+                    <a class="nav-link" th:href="@{'/users/' + ${userId}}">
                         <span sec:authentication="name"></span>
                     </a>
             </ul>

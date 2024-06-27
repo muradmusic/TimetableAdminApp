@@ -18,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -102,9 +104,14 @@ public class UserController {
         model.addAttribute("users", users);
         model.addAttribute("user_courses", userCourses);
 
+        // Get the current authenticated user's username
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        log.info("Fetched users: {}", users);
-        log.info("Fetched user courses: {}", userCourses);
+        String username = authentication.getName();
+        User currentUser = userService.findUserByUsername(username);
+
+        model.addAttribute("userId", currentUser.getId());
+
         return "users/all-users";
     }
 
@@ -187,7 +194,7 @@ public class UserController {
 
 
     @PostMapping("/{userId}")
-    public String addUserCourse(@PathVariable Long userId, @RequestParam Long courseId, @RequestParam TeachingType teachingType, @ModelAttribute UserCourse userCourse, BindingResult result) {
+    public String addUserCourse(@PathVariable Long userId, @RequestParam Long courseId, @RequestParam TeachingType teachingType, @ModelAttribute UserCourse userCourse, RedirectAttributes redirectAttributes, BindingResult result) {
 
         if (result.hasErrors()) {
             System.out.println("error occurred");
@@ -195,13 +202,11 @@ public class UserController {
         User user = userService.getUserById(userId);
         Course course = courseService.getCourseById(courseId);
 
-//        boolean alreadyHasCourse = userCourseService.existsByUserAndCourseAndTeachingType(user, course, teachingType);
-//
-//
-//        if (alreadyHasCourse) {
-//            System.out.println("User already has this course");
-//            return "redirect:/users/{userId}";
-//        }
+        boolean existUserWithLabs = userCourseService.existsByUserAndCourseAndTeachingType(user, course, TeachingType.LAB);
+        if(existUserWithLabs && course.hasLabs() && teachingType != TeachingType.SEMINAR && teachingType != TeachingType.LECTURE ){
+            redirectAttributes.addFlashAttribute("LabRecordExists", "Course already has this user with lab class");
+            return "redirect:/courses/" + courseId;
+        }
 
         userCourse.setUser(user);
         userCourse.setCourse(course);

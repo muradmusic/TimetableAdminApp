@@ -31,12 +31,11 @@ public class Course {
     private int currentLab = 0;
     private boolean hasLabs;
 
-//    private int desiredLab;
-
-    private boolean approvedAll;
-    public Course(String courseCode, boolean hasLabs, int numLecture, int numSeminar, int numLab, int currentLecture, int currentSeminar, int currentLab) {
+    private boolean covered;
+    public Course(String courseCode, boolean hasLabs, boolean covered, int numLecture, int numSeminar, int numLab, int currentLecture, int currentSeminar, int currentLab) {
         this.courseCode = courseCode;
         this.hasLabs = hasLabs;
+        this.covered = covered;
         this.numLecture = numLecture;
         this.numSeminar = numSeminar;
         this.numLab = numLab;
@@ -47,11 +46,8 @@ public class Course {
     public boolean hasLabs() {
         return hasLabs;
     }
-    public boolean approvedAll(){
-        return approvedAll;
-    }
+//    public boolean approvedAll(){
+//        return approvedAll;
+//    }
 
-    public void setHasLabs(boolean hasLabs) {
-        this.hasLabs = hasLabs;
-    }
 }
