@@ -108,7 +108,6 @@ public class CourseServiceImpl implements CourseService {
             int totalMinLab = 0;
             int totalMaxLab = 0;
 
-
             for (UserCourse uc : userCourses) {
                 switch (uc.getTeachingType()) {
                     case LECTURE:
@@ -143,7 +142,7 @@ public class CourseServiceImpl implements CourseService {
 
             boolean labRequirementsMet = true;
             if (course.isHasLabs()) {
-                labRequirementsMet = course.getNumLab() >= totalMinLab && course.getNumLab() <= totalMaxLab;
+                labRequirementsMet = course.getNumLab() <= totalMaxLab;
             }
 
             boolean newCoveredStatus = allLecturesApproved &&
